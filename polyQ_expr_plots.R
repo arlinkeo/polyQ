@@ -1,0 +1,61 @@
+# Distribution of gene expression
+
+setwd("C:/Users/dkeo/Documents/Human-brain-project/polyQgenes")
+library(WGCNA)
+options(stringsAsFactors = FALSE)
+
+#Load gene ID's
+probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
+entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]}
+load("polyQ.RData")
+#probeInfo[probeInfo$entrez_id %in% pQEntrezIDs, ]
+genes <- probeInfo[ , 6]
+
+#Read expression data
+donorList <- list("9861" = "9861",
+                  "10021" = "10021", 
+                  "12876" = "12876", 
+                  "14380" = "14380", 
+                  "15496" = "15496", 
+                  "15697" = "15697")
+donorList <- lapply(donorList, function(x){
+  gene_expr <- read.csv(paste("../ABA_human_processed/gene_expr_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""), header = FALSE)
+  rownames(gene_expr) <- genes
+  sample_info <- read.csv(paste("../ABA_human_processed/sample_info_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""))
+  colnames(gene_expr) <- sample_info$structure_id
+  gene_expr <- gene_expr[pQEntrezIDs, ]
+  rownames(gene_expr) <- sapply(rownames(gene_expr), entrezId2Name)
+  as.matrix(gene_expr)
+})
+remove(genes)
+
+#Reduce samples to those that occur in all donors, and convert row- and colnames
+all_samples <- lapply(donorList, colnames)
+unique_samples <- unique(unlist(all_samples))
+alldonor_samples <- unique_samples[sapply(unique_samples, function(x){if (FALSE %in% sapply(all_samples, function(y){x %in% y})) FALSE else TRUE})]
+ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
+rownames(ontology) <- ontology$id
+alldonor_samples <- names(sort(sapply(alldonor_samples, function(x){ontology[x, 'graph_order']})))
+donorList <- lapply(donorList, function(x){x[ , alldonor_samples]})
+donorList <- lapply(donorList, function(x){
+  colnames(x) <- sapply(colnames(x), function(y){ontology[y, 'acronym']})
+  x
+})
+
+#Mean and std. dev. for each polyQ gene in all samples across donors
+mean_expr <- apply(simplify2array(donorList), 1:2, mean)
+sd_expr <- apply(simplify2array(donorList), 1:2, sd)
+#var_expr <- apply(simplify2array(donorList), 1:2, var)
+
+#Plot histogram
+colors <- sapply(alldonor_samples, function(x){paste("#", ontology[x, 'color_hex_triplet'], sep = "")})
+pdf(file = "polyQ_expr_plots.pdf", 24)
+for (pq in polyQgenes){
+  # lapply(names(donorList), function(d){
+  #   pq_expr <- unlist(donorList[[d]][pq, ])
+  #   barplot(pq_expr, main = paste(pq, " expression in donor ", d, sep = ""), las = 2, col = colors, ylim = c(0,10))
+  # })
+  barplot(mean_expr[pq, ], main = paste("Average ", pq, " expression across donors ", sep = ""), las = 2, col = colors, ylim = c(0,10))
+  barplot(sd_expr[pq, ], main = paste("Standard deviation of ", pq, " expression across donors ", sep = ""), las = 2, col = colors, ylim = c(0,2.5))
+}
+dev.off()

@@ -104,13 +104,13 @@ colorder <- c("cerebellum", "globus_pallidus", "basal_forebrain", "striatum", "m
 pdf(file = "regionLs_threshold.pdf", 8, 9)
 par(mar = c(2,6,12,3));
 lapply(c(8, 7, 6), function(x){
-  file <- paste("regionLs_threshold0", x, "0.RData", sep = "")
+  file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/polyQ_scripts/resources/regionLs_threshold0", x, "0.RData", sep = "")
   attach(file)
   table <- make.table(regionLs)
   #sorted_table <- table[c(order(apply(table[-10, ], 1, sum), decreasing = TRUE), 10), order(table["Total", ], decreasing = TRUE)]
   sorted_table <- table[roworder, colorder]
   detach(2)
-  labeledHeatmap(replace(sorted_table, which(sorted_table == 0), NA), xLabels = colnames(sorted_table), xLabelsPosition = "top", 
+  labeledHeatmap(replace(sorted_table, which(sorted_table == 0), NA), xLabels = gsub("_", " ", colnames(sorted_table)), xLabelsPosition = "top", 
                  yLabels = c(make.italic(rownames(sorted_table)[-10]), rownames(sorted_table)[10]), colors = blueWhiteRed(200)[100:200], 
                  main = paste("Genes correlated >0.", x, " for each polyQ gene in different regions", sep = ), 
                  setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = sorted_table)

@@ -20,7 +20,7 @@ load("polyQ.RData")
 #   cyt <- exportNetworkToCytoscape(moduleMeans, edgeFile = paste("moduleMeansEdges_", x[2],".txt", sep = ""), threshold = 0.0, nodeAttr = pQcolors)
 # })
 
-#####################################################
+#########################################
 #Variance of edges
 regionLs <- split(structureIDs, seq(nrow(structureIDs)))
 names(regionLs) <- gsub(" ", "_", structureIDs$name)

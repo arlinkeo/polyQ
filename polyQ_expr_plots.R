@@ -10,6 +10,8 @@ entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInf
 load("polyQ.RData")
 #probeInfo[probeInfo$entrez_id %in% pQEntrezIDs, ]
 genes <- probeInfo[ , 6]
+ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
+rownames(ontology) <- ontology$id
 
 #Read expression data
 donorList <- list("9861" = "9861",
@@ -33,8 +35,6 @@ remove(genes)
 all_samples <- lapply(donorList, colnames)
 unique_samples <- unique(unlist(all_samples))
 alldonor_samples <- unique_samples[sapply(unique_samples, function(x){if (FALSE %in% sapply(all_samples, function(y){x %in% y})) FALSE else TRUE})]
-ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-rownames(ontology) <- ontology$id
 alldonor_samples <- names(sort(sapply(alldonor_samples, function(x){ontology[x, 'graph_order']})))
 donorList <- lapply(donorList, function(x){x[ , alldonor_samples]})
 donorList <- lapply(donorList, function(x){
@@ -51,11 +51,31 @@ sd_expr <- apply(simplify2array(donorList), 1:2, sd)
 colors <- sapply(alldonor_samples, function(x){paste("#", ontology[x, 'color_hex_triplet'], sep = "")})
 pdf(file = "polyQ_expr_plots.pdf", 24)
 for (pq in polyQgenes){
-  # lapply(names(donorList), function(d){
-  #   pq_expr <- unlist(donorList[[d]][pq, ])
-  #   barplot(pq_expr, main = paste(pq, " expression in donor ", d, sep = ""), las = 2, col = colors, ylim = c(0,10))
-  # })
+  lapply(names(donorList), function(d){
+    pq_expr <- unlist(donorList[[d]][pq, ])
+    barplot(pq_expr, main = paste(pq, " expression in donor ", d, sep = ""), las = 2, col = colors, ylim = c(0,10))
+  })
   barplot(mean_expr[pq, ], main = paste("Average ", pq, " expression across donors ", sep = ""), las = 2, col = colors, ylim = c(0,10))
   barplot(sd_expr[pq, ], main = paste("Standard deviation of ", pq, " expression across donors ", sep = ""), las = 2, col = colors, ylim = c(0,2.5))
 }
 dev.off()
+
+
+# #Plot expression for each donor and polyQ gene separately using all samples
+# # colors <- sapply(ontology[ , 'color_hex_triplet'], function(x){paste("#", x, sep = "")})
+# # names(colors) <- rownames(ontology)
+# pdf(file = "polyQ_expr_plots2.pdf", 24)
+# for (pq in polyQgenes){
+#   lapply(names(donorList), function(d){
+#     expr <- donorList[[d]][pq, ]
+#     colors <- sapply(names(expr), function(x){
+#       clr <- paste("#", ontology[x, 'color_hex_triplet'], sep = "")
+#       if (nchar(clr) == 6) {clr <- gsub("#","#0", clr)}
+#       clr
+#     })
+#     names(expr) <-sapply(names(expr), function(x){ontology[x, 'acronym']})
+#     barplot(expr, main = paste(pq, " expression in donor ", d, sep = ""), las = 2, col = colors, ylim = c(0,10))
+#   })
+#   
+# }
+# dev.off()

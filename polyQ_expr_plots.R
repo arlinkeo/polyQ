@@ -31,6 +31,7 @@ donorList <- lapply(donorList, function(x){
 })
 remove(genes)
 
+###############################################################################
 #Reduce samples to those that occur in all donors, and convert row- and colnames
 all_samples <- lapply(donorList, colnames)
 unique_samples <- unique(unlist(all_samples))
@@ -60,6 +61,7 @@ for (pq in polyQgenes){
 }
 dev.off()
 
+############################################################################
 
 # #Plot expression for each donor and polyQ gene separately using all samples
 # # colors <- sapply(ontology[ , 'color_hex_triplet'], function(x){paste("#", x, sep = "")})

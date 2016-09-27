@@ -1,16 +1,16 @@
 # Distribution of gene expression
 
-setwd("C:/Users/dkeo/Documents/Human-brain-project/polyQgenes")
+setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Load gene ID's
-probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
+probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]}
 load("polyQ.RData")
 #probeInfo[probeInfo$entrez_id %in% pQEntrezIDs, ]
 genes <- probeInfo[ , 6]
-ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
+ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 rownames(ontology) <- ontology$id
 
 #Read expression data
@@ -21,9 +21,9 @@ donorList <- list("9861" = "9861",
                   "15496" = "15496", 
                   "15697" = "15697")
 donorList <- lapply(donorList, function(x){
-  gene_expr <- read.csv(paste("../ABA_human_processed/gene_expr_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""), header = FALSE)
+  gene_expr <- read.csv(paste("ABA_human_processed/gene_expr_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""), header = FALSE)
   rownames(gene_expr) <- genes
-  sample_info <- read.csv(paste("../ABA_human_processed/sample_info_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""))
+  sample_info <- read.csv(paste("ABA_human_processed/sample_info_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""))
   colnames(gene_expr) <- sample_info$structure_id
   gene_expr <- gene_expr[pQEntrezIDs, ]
   rownames(gene_expr) <- sapply(rownames(gene_expr), entrezId2Name)

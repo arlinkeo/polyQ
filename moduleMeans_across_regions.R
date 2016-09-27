@@ -1,9 +1,9 @@
 #Networks of module means in different regions to Cytoscape.
-setwd("C:/Users/dkeo/Documents/Human-brain-project/polyQgenes")
+setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
 options(stringsAsFactors = FALSE)
 
-load("polyQ.RData")
+load("resources/polyQ.RData")
 
 ###Cytoscape circular plots###
 # load("whole_brain/moduleMeans.RData")

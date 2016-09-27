@@ -7,7 +7,7 @@ options(stringsAsFactors = FALSE)
 #Load gene ID's
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]}
-load("polyQ.RData")
+load("resources/polyQ.RData")
 #probeInfo[probeInfo$entrez_id %in% pQEntrezIDs, ]
 genes <- probeInfo[ , 6]
 ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")

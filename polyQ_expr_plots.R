@@ -62,22 +62,24 @@ for (pq in polyQgenes){
 dev.off()
 
 ############################################################################
+### Plot per donor all samples ###
 
-# #Plot expression for each donor and polyQ gene separately using all samples
-# # colors <- sapply(ontology[ , 'color_hex_triplet'], function(x){paste("#", x, sep = "")})
-# # names(colors) <- rownames(ontology)
-# pdf(file = "polyQ_expr_plots2.pdf", 24)
-# for (pq in polyQgenes){
-#   lapply(names(donorList), function(d){
-#     expr <- donorList[[d]][pq, ]
-#     colors <- sapply(names(expr), function(x){
-#       clr <- paste("#", ontology[x, 'color_hex_triplet'], sep = "")
-#       if (nchar(clr) == 6) {clr <- gsub("#","#0", clr)}
-#       clr
-#     })
-#     names(expr) <-sapply(names(expr), function(x){ontology[x, 'acronym']})
-#     barplot(expr, main = paste(pq, " expression in donor ", d, sep = ""), las = 2, col = colors, ylim = c(0,10))
-#   })
-#   
-# }
-# dev.off()
+pdf(file = "polyQ_expr_plots2.pdf", 60, 30)
+
+lapply(names(donorList), function(d){
+  expr <- donorList[[d]]
+  expr <- expr[ , names(sort(sapply(colnames(expr), function(x) {ontology[x, 'graph_order']})))]
+  colors <- sapply(colnames(expr), function(x){
+    clr <- ontology[x, 'color_hex_triplet']
+    if (nchar(clr) == 5) {paste("#0", clr, sep = "")}
+    else {paste("#", clr, sep = "")}
+  })
+  colnames(expr) <- sapply(colnames(expr), function(x){ontology[x, 'acronym']})
+  par(mfrow = c(9, 1), oma = c(0, 0, 10, 0), lwd = 0.01);
+  sapply(rownames(expr), function(x){
+    barplot(expr[x, ], main = bquote(italic(.(x))), col = colors, las = 2, cex.names = 0.5, ylim = c(0, 12))
+  })
+  title(paste("Donor ", d, sep = ""), outer = TRUE, cex.main = 3)
+})
+
+dev.off()

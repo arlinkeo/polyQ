@@ -64,7 +64,7 @@ dev.off()
 ############################################################################
 ### Plot per donor all samples ###
 
-pdf(file = "polyQ_expr_plots2.pdf", 60, 30)
+pdf(file = "polyQ_expr_plots2.pdf", 80, 30)
 
 lapply(names(donorList), function(d){
   expr <- donorList[[d]]
@@ -75,11 +75,13 @@ lapply(names(donorList), function(d){
     else {paste("#", clr, sep = "")}
   })
   colnames(expr) <- sapply(colnames(expr), function(x){ontology[x, 'acronym']})
-  par(mfrow = c(9, 1), oma = c(0, 0, 10, 0), lwd = 0.01);
+  par(mfrow = c(9, 1), oma = c(0, 0, 15, 0), lwd = 0.01);
   sapply(rownames(expr), function(x){
-    barplot(expr[x, ], main = bquote(italic(.(x))), col = colors, las = 2, cex.names = 0.5, ylim = c(0, 12))
+    barplot(expr[x, ], main = bquote(italic(.(x))), cex.main = 5, col = colors, las = 2, cex.names = 0.5, 
+            ylim = c(0, 10.5), yaxt = 'n')
+    axis(2, pos = 0, cex.axis = 3)
   })
-  title(paste("Donor ", d, sep = ""), outer = TRUE, cex.main = 3)
+  title(paste("Donor ", d, sep = ""), outer = TRUE, cex.main = 8)
 })
 
 dev.off()

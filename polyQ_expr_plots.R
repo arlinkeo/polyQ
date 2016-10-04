@@ -64,7 +64,7 @@ dev.off()
 ############################################################################
 ### Plot per donor all samples ###
 
-pdf(file = "polyQ_expr_plots2.pdf", 80, 30)
+pdf(file = "polyQ_expr_plots2.pdf", 60, 40) #80,30
 
 lapply(names(donorList), function(d){
   expr <- donorList[[d]]

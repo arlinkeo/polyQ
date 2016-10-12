@@ -16,13 +16,14 @@ mm_list <- lapply(regionLs, function(x) {
   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
-  mm <- moduleMeans
-  #mm <- abs(moduleMeans)
+  #mm <- moduleMeans
+  mm <- abs(moduleMeans)
   detach(2)
   mm
 })
 attach("regional_coexpression/whole_brain/moduleMeans.Rdata")
-mm_wb <- moduleMeans
+#mm_wb <- moduleMeans
+mm_wb <- abs(moduleMeans)
 detach(2)
 mm_list <- c(list(mm_wb), mm_list)
 names(mm_list)[1] <- "whole_brain"
@@ -47,12 +48,14 @@ mm <- as.data.frame(mm)
 
 #Rank-sum test
 res <- apply(mm, 2, function(x){
-  wilcox.test(x, genotype_pairs)
+  x_0 <- x[which(genotype_pairs == 0)]
+  x_1 <- x[which(genotype_pairs == 1)]
+  wilcox.test(x_0, x_1)
 })
 pvalues <- t(sapply(res, function(x){x$p.value}))
 
 #Plot table and boxplot of correlations for associated and non-associated interaction in literature
-pdf(file = "datatype_interactions.pdf", 12, 16)
+pdf(file = "datatype_interactions_abs.pdf", 12, 16)
 par(mar = c(65, 12, 13.5, 12.3));
 labeledHeatmap(pvalues, xLabels = colnames(pvalues), yLabels = "rank-sum p-values", xLabelsPosition = "top", setStdMargins = FALSE,
                xLabelsAdj = 0, colors = "white",  textMatrix = round(pvalues, digits = 2), plotLegend = FALSE, 
@@ -60,7 +63,7 @@ labeledHeatmap(pvalues, xLabels = colnames(pvalues), yLabels = "rank-sum p-value
 par(mar = c(6, 12, 16, 4), new = TRUE);
 table <- cbind(mm, genotype_pairs)
 labeledHeatmap(table, xLabels = NULL, yLabels = make.italic(rownames(table)), setStdMargins = FALSE,
-               xLabelsAdj = 0, zlim = c(-1,1), colors = blueWhiteRed(200), textMatrix = round(table, digits = 2))
+               xLabelsAdj = 0, zlim = c(0,1), colors = blueWhiteRed(200)[100:200], textMatrix = round(table, digits = 2))
 par(mar = c(20, 10, 20, 8));
 boxplot(mm, las = 2, ylab = "co-expression", main = "Co-expression distribution of polyQ modules in different brain areas",
         cex.axis = 1.5, cex.lab = 1.5)

@@ -16,13 +16,11 @@ mm_list <- lapply(regionLs, function(x) {
   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
-  #mm <- moduleMeans
   mm <- abs(moduleMeans)
   detach(2)
   mm
 })
 attach("regional_coexpression/whole_brain/moduleMeans.Rdata")
-#mm_wb <- moduleMeans
 mm_wb <- abs(moduleMeans)
 detach(2)
 mm_list <- c(list(mm_wb), mm_list)
@@ -31,9 +29,6 @@ rm(mm_wb, regionLs)
 
 #Load interaction info from literature
 genotype_pairs <- read.csv("Genotype-based_associations.txt", sep = "\t", row.names = 1, comment.char = "#")
-# genepairs <- rownames(genotype_pairs)
-# genotype_pairs <- genotype_pairs[, 1]
-# names(genotype_pairs) <- genepairs
 
 #Convert co-expression matrices to vectors
 mm <- sapply(mm_list, function(x){

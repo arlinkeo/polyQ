@@ -9,6 +9,21 @@ options(stringsAsFactors = FALSE)
 load("resources/polyQ.RData")
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
+
+#Load interaction info from literature
+genotype_pairs <- read.csv("Genotype-based_associations.txt", sep = "\t", row.names = 1, comment.char = "#")
+genepairs <- rownames(genotype_pairs)
+
+#Function to convert co-expression matrices to vectors
+mat2vec <- function(x){
+  coexpr <- sapply(genepairs, function(y){
+    genes <- unlist(strsplit(y, "-"))
+    gene1 <-genes[1]
+    gene2 <-genes[2]
+    x[gene1, gene2]
+  })
+}
+
 # Load module means (averaged co-expression between two modules with 25 genes each) of regions
 regionLs <- split(structureIDs, seq(nrow(structureIDs)))
 names(regionLs) <- gsub(" ", "_", structureIDs$name)
@@ -25,22 +40,24 @@ mm_wb <- abs(moduleMeans)
 detach(2)
 mm_list <- c(list(mm_wb), mm_list)
 names(mm_list)[1] <- "whole_brain"
-rm(mm_wb, regionLs)
-
-#Load interaction info from literature
-genotype_pairs <- read.csv("Genotype-based_associations.txt", sep = "\t", row.names = 1, comment.char = "#")
-genepairs <- rownames(genotype_pairs)
-
-#Convert co-expression matrices to vectors
-mm <- sapply(mm_list, function(x){
-  coexpr <- sapply(genepairs, function(y){
-    genes <- unlist(strsplit(y, "-"))
-    gene1 <-genes[1]
-    gene2 <-genes[2]
-    x[gene1, gene2]
-  })
-})
+rm(mm_wb)
+mm <- sapply(mm_list, function(x){mat2vec(x)})
 mm <- as.data.frame(mm)
+
+### Load single correlations between polyQ genes
+sc_list <- lapply(regionLs[1], function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
+  print(f)
+  attach(f)
+  sc <- meanCor[pQEntrezIDs, pQEntrezIDs]
+  colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
+  rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
+  detach(2)
+  sc
+  })
+rm(regionLs)
+sc <- sapply(sc_list, function(x){mat2vec(x)})
+sc <- as.data.frame(sc)
 
 #Rank-sum test function
 ranksum <- function(a, b) {

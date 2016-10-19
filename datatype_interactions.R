@@ -55,6 +55,7 @@ ranksum <- function(a, b) {
 # Function to plot table and barplots
 plot.associations <- function(x, main = ""){ # x is a vector with binary associations from literature
   pvalues = ranksum(mm, x)
+  print(pvalues)
   par(mar = c(65, 12, 13.5, 12.3));
   labeledHeatmap(pvalues, xLabels = colnames(pvalues), yLabels = "rank-sum p-values", xLabelsPosition = "top", setStdMargins = FALSE,
                  xLabelsAdj = 0, colors = "white",  textMatrix = round(pvalues, digits = 2), plotLegend = FALSE, 

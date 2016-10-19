@@ -29,6 +29,7 @@ rm(mm_wb, regionLs)
 
 #Load interaction info from literature
 genotype_pairs <- read.csv("Genotype-based_associations.txt", sep = "\t", row.names = 1, comment.char = "#")
+genepairs <- rownames(genotype_pairs)
 
 #Convert co-expression matrices to vectors
 mm <- sapply(mm_list, function(x){

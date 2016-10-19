@@ -45,7 +45,7 @@ mm <- sapply(mm_list, function(x){mat2vec(x)})
 mm <- as.data.frame(mm)
 
 ### Load single correlations between polyQ genes
-sc_list <- lapply(regionLs[1], function(x) {
+sc_list <- lapply(regionLs, function(x) {
   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
   print(f)
   attach(f)

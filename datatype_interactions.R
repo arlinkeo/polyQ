@@ -84,7 +84,7 @@ plot.associations(combined1, main = "Effect on age-at-onset, based on interactio
 
 #Associations bassed on age-at-onset and other phenotypes
 combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
-plot.associations(combined1, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
+plot.associations(combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
 combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
 combined <- bitwOr(combined1, combined3)
 plot.associations(combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")

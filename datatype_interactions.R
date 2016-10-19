@@ -9,7 +9,6 @@ options(stringsAsFactors = FALSE)
 load("resources/polyQ.RData")
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
-
 #Load interaction info from literature
 genotype_pairs <- read.csv("Genotype-based_associations.txt", sep = "\t", row.names = 1, comment.char = "#")
 genepairs <- rownames(genotype_pairs)
@@ -44,18 +43,26 @@ rm(mm_wb)
 mm <- sapply(mm_list, function(x){mat2vec(x)})
 mm <- as.data.frame(mm)
 
-### Load single correlations between polyQ genes
+### Load single correlations between polyQ genes ###
 sc_list <- lapply(regionLs, function(x) {
   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
-  sc <- meanCor[pQEntrezIDs, pQEntrezIDs]
+  sc <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
   colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
   rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
   detach(2)
   sc
-  })
+})
 rm(regionLs)
+attach("regional_coexpression/whole_brain/meanCor.Rdata")
+sc_wb <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
+colnames(sc_wb) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc_wb), "gene_symbol"]
+rownames(sc_wb) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc_wb), "gene_symbol"]
+detach(2)
+sc_list <- c(list(sc_wb), sc_list)
+names(sc_list)[1] <- "whole_brain"
+rm(sc_wb)
 sc <- sapply(sc_list, function(x){mat2vec(x)})
 sc <- as.data.frame(sc)
 
@@ -70,15 +77,15 @@ ranksum <- function(a, b) {
 }
 
 # Function to plot table and barplots
-plot.associations <- function(x, main = ""){ # x is a vector with binary associations from literature
-  pvalues = ranksum(mm, x)
+plot.associations <- function(mat, x, main = ""){ # x is a vector with binary associations from literature
+  pvalues = ranksum(mat, x)
   print(pvalues)
   par(mar = c(65, 12, 13.5, 12.3));
   labeledHeatmap(pvalues, xLabels = colnames(pvalues), yLabels = "rank-sum p-values", xLabelsPosition = "top", setStdMargins = FALSE,
                  xLabelsAdj = 0, colors = "white",  textMatrix = round(pvalues, digits = 2), plotLegend = FALSE, 
                  main = main)
   par(mar = c(6, 12, 16, 4), new = TRUE);
-  table <- cbind(mm, x)
+  table <- cbind(mat, x)
   table <- table[order(-x), ]
   labeledHeatmap(table, xLabels = NULL, yLabels = make.italic(rownames(table)), setStdMargins = FALSE,
                  xLabelsAdj = 0, zlim = c(0,1), colors = blueWhiteRed(200)[100:200], textMatrix = round(table, digits = 2))
@@ -90,22 +97,39 @@ plot.associations <- function(x, main = ""){ # x is a vector with binary associa
           at = c(1:27)[-seq(3, 27, 3)], ylab = "co-expression", cex.axis = 1.5, cex.lab = 1.5)
 }
 
-#Plot table and boxplot of correlations for associated and non-associated interaction in literature
+### Plot results using averaged correlation between two polyQ modules ###
 pdf(file = "datatype_interactions.pdf", 12, 16)
 # par(mar = c(20, 10, 20, 8));
 # boxplot(mm, las = 2, ylab = "co-expression", main = "Co-expression distribution of polyQ modules in different brain areas",
 #         cex.axis = 1.5, cex.lab = 1.5)
 
 #Associations bassed on age-at-onset
-plot.associations(genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
+plot.associations(mm, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
 combined1 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 2])
-plot.associations(combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
+plot.associations(mm, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
 
 #Associations bassed on age-at-onset and other phenotypes
 combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
-plot.associations(combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
+plot.associations(mm, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
 combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
 combined <- bitwOr(combined1, combined3)
-plot.associations(combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
+plot.associations(mm, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
+
+dev.off()
+
+### Plot results using single correlation between two polyQ genes ###
+pdf(file = "datatype_interactions_single.pdf", 12, 16)
+
+#Associations bassed on age-at-onset
+plot.associations(sc, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
+combined1 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 2])
+plot.associations(sc, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
+
+#Associations bassed on age-at-onset and other phenotypes
+combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
+plot.associations(sc, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
+combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
+combined <- bitwOr(combined1, combined3)
+plot.associations(sc, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
 
 dev.off()

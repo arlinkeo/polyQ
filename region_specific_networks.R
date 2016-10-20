@@ -1,5 +1,5 @@
 #Plotting region-specific networks
-setwd("C:/Users/dkeo/Documents/Human-brain-project/polyQgenes")
+setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression/regional_coexpression")
 library(WGCNA)
 options(stringsAsFactors = FALSE)
 

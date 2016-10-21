@@ -5,9 +5,8 @@ options(stringsAsFactors = FALSE)
 
 load("../resources/polyQ.RData")
 ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-id <- ontology[ontology$name %in% "cerebellar cortex", ][ , c(1:3)]
-id[3] <- "cerebellum"
-load(paste("cerebellum/subsetCor_", id[2], ".RData", sep = ""))
+id <- ontology[ontology$name %in% "cerebellar nuclei", ][ , c(1:3)]
+load(paste(gsub(" ", "_", id[3]), "/subsetCor_", id[2], ".RData", sep = ""))
 
 #Heatmap of modules averaged
 modules <- rep(polyQgenes, each = 26)

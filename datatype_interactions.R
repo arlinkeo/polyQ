@@ -107,17 +107,19 @@ pdf(file = "datatype_interactions2.pdf", 12, 16)
 # boxplot(mm, las = 2, ylab = "co-expression", main = "Co-expression distribution of polyQ modules in different brain areas",
 #         cex.axis = 1.5, cex.lab = 1.5)
 
-#Associations bassed on age-at-onset
+#Associations based on age-at-onset
 plot.associations(mm, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
 combined1 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 2])
 plot.associations(mm, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
 
-#Associations bassed on age-at-onset and other phenotypes
+#Associations based on age-at-onset and other phenotypes
 combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
 plot.associations(mm, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
 combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
 combined <- bitwOr(combined1, combined3)
 plot.associations(mm, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
+
+
 
 dev.off()
 # 

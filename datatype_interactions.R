@@ -9,7 +9,6 @@ options(stringsAsFactors = FALSE)
 load("resources/polyQ.RData")
 ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 id_cb <- ontology[ontology$name %in% c("cerebellar cortex", "cerebellar nuclei"), ][ , c(1:3)]
-id_cb[, 3] <- "cerebellum"
 structureIDs <- rbind(id_cb, structureIDs[!(structureIDs$acronym %in% 'Cb'), ])
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
@@ -119,7 +118,11 @@ combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
 combined <- bitwOr(combined1, combined3)
 plot.associations(mm, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
 
+#Associations based on age-at-onset and other phenotypes in HD patients (Stuitje report)
+plot.associations(mm, genotype_pairs[, 5], main = "Effect on age-at-onset and other phenotypes in HD patients, based on interaction and single gene model")
 
+#Associations based on age-at-onset and other phenotypes in SCA patients
+plot.associations(mm, genotype_pairs[, 6], main = "Effect on age-at-onset and other phenotypes in SCA patients, based on interaction and single gene model")
 
 dev.off()
 # 

@@ -12,7 +12,7 @@ load("resources/polyQ_expr.RData")
 genepairs <- t(combn(polyQgenes, 2))
 rownames(genepairs) <- apply(genepairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
 
-lapply(names(donorList[1]), function(d){
+lapply(names(donorList), function(d){
   expr <- donorList[[d]]
   colors <- sapply(colnames(expr), function(x){
     clr <- ontology[x, 'color_hex_triplet']

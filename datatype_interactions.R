@@ -72,7 +72,8 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
                  main = main)
   par(mar = c(6, 12, 16, 4), new = TRUE);
   table <- cbind(mat, x)
-  table <- table[order(-x), ]
+  table <- table[complete.cases(table), ]
+  table <- table[order(-table[, ncol(table)]), ]
   labeledHeatmap(table, xLabels = NULL, yLabels = make.italic(rownames(table)), setStdMargins = FALSE,
                  xLabelsAdj = 0, zlim = c(0,1), colors = blueWhiteRed(200)[100:200], textMatrix = round(table, digits = 2))
   par(mar = c(20, 10, 20, 8));
@@ -84,44 +85,51 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
 }
 
 ### Plot results using averaged correlation between two polyQ modules ###
-pdf(file = "datatype_interactions2.pdf", 12, 16)
+# pdf(file = "datatype_interactions2.pdf", 12, 16)
 # par(mar = c(20, 10, 20, 8));
 # boxplot(mm, las = 2, ylab = "co-expression", main = "Co-expression distribution of polyQ modules in different brain areas",
 #         cex.axis = 1.5, cex.lab = 1.5)
 
 #Associations based on age-at-onset
-plot.associations(mm, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
-combined1 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 2])
-plot.associations(mm, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
-
-#Associations based on age-at-onset and other phenotypes
-combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
-plot.associations(mm, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
-combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
-combined <- bitwOr(combined1, combined3)
-plot.associations(mm, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
-
-#Associations based on age-at-onset and other phenotypes in HD patients (Stuitje report)
-plot.associations(mm, genotype_pairs[, 5], main = "Effect on age-at-onset and other phenotypes in HD patients, based on interaction and single gene model")
-
-#Associations based on age-at-onset and other phenotypes in SCA patients
-plot.associations(mm, genotype_pairs[, 6], main = "Effect on age-at-onset and other phenotypes in SCA patients, based on interaction and single gene model")
-
-dev.off()
-# 
-# ### Plot results using single correlation between two polyQ genes ###
-# pdf(file = "datatype_interactions_single.pdf", 12, 16)
-# 
-# #Associations bassed on age-at-onset
-# plot.associations(sc, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
+# plot.associations(mm, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
 # combined1 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 2])
-# plot.associations(sc, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
+# plot.associations(mm, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
 # 
-# #Associations bassed on age-at-onset and other phenotypes
+# #Associations based on age-at-onset and other phenotypes
 # combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
-# plot.associations(sc, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
+# plot.associations(mm, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
 # combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
 # combined <- bitwOr(combined1, combined3)
-# plot.associations(sc, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
+# plot.associations(mm, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
+# 
+# #Associations based on age-at-onset and other phenotypes in HD patients (Stuitje report)
+# plot.associations(mm, genotype_pairs[, 5], main = "Effect on age-at-onset and other phenotypes in HD patients, based on interaction and single gene model")
+# 
+# #Associations based on age-at-onset and other phenotypes in SCA patients
+# plot.associations(mm, genotype_pairs[, 6], main = "Effect on age-at-onset and other phenotypes in SCA patients, based on interaction and single gene model")
 # 
 # dev.off()
+
+# ### Plot results using single correlation between two polyQ genes ###
+pdf(file = "datatype_interactions3.pdf", 12, 16)
+
+#Associations bassed on age-at-onset
+plot.associations(sc, genotype_pairs[, "SCA2_AAO"], main = "Effect on age-at-onset in SCA2 patients")
+plot.associations(sc, genotype_pairs[, "SCA3_AAO"], main = "Effect on age-at-onset in SCA3 patients")
+plot.associations(sc, genotype_pairs[, "SCA6_AAO"], main = "Effect on age-at-onset in SCA6 patients")
+plot.associations(sc, genotype_pairs[, "SCA7_AAO"], main = "Effect on age-at-onset in SCA7 patients")
+
+plot.associations(sc, genotype_pairs[, "HD_AAO"], main = "Effect on age-at-onset in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_BMI"], main = "Effect on BMI in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_motor"], main = "Effect on motor in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_functional"], main = "Effect on functional score in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_behavioral"], main = "Effect on behavioral score in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_depression"], main = "Effect on depression score in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_anxiety"], main = "Effect on anxiety score in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_irritability"], main = "Effect on irritability score in HD patients")
+plot.associations(sc, genotype_pairs[, "HD_cognition"], main = "Effect on cognition score in HD patients")
+plot.associations(sc, genotype_pairs[, "SCA_total"], main = "Effect on SCA patients")
+plot.associations(sc, genotype_pairs[, "HD_total"], main = "Effect on HD patients")
+plot.associations(sc, genotype_pairs[, "SCA_and_HD"], main = "Effect on SCA and HD patients")
+
+dev.off()

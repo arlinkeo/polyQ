@@ -7,13 +7,10 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 load("resources/polyQ.RData")
-ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
-id_cb <- ontology[ontology$name %in% c("cerebellar cortex", "cerebellar nuclei"), ][ , c(1:3)]
-structureIDs <- rbind(id_cb, structureIDs[!(structureIDs$acronym %in% 'Cb'), ])
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 #Load interaction info from literature
-genotype_pairs <- read.csv("Genotype-based_associations.txt", sep = "\t", row.names = 1, comment.char = "#")
+genotype_pairs <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
 genepairs <- rownames(genotype_pairs)
 
 #Function to convert co-expression matrices to vectors
@@ -29,45 +26,31 @@ mat2vec <- function(x){
 # Load module means (averaged co-expression between two modules with 25 genes each) of regions
 regionLs <- split(structureIDs, seq(nrow(structureIDs)))
 names(regionLs) <- gsub(" ", "_", structureIDs$acronym)
-mm_list <- lapply(regionLs, function(x) {
-  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
-  print(f)
-  attach(f)
-  mm <- abs(moduleMeans)
-  detach(2)
-  mm
-})
-attach("regional_coexpression/whole_brain/moduleMeans.Rdata")
-mm_wb <- abs(moduleMeans)
-detach(2)
-mm_list <- c(list(mm_wb), mm_list)
-names(mm_list)[1] <- "Wb"
-rm(mm_wb)
-mm <- sapply(mm_list, function(x){mat2vec(x)})
-mm <- as.data.frame(mm)
-
-### Load single correlations between polyQ genes ###
-# sc_list <- lapply(regionLs, function(x) {
-#   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
+# mm_list <- lapply(regionLs, function(x) {
+#   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
 #   print(f)
 #   attach(f)
-#   sc <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
-#   colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
-#   rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
+#   mm <- abs(moduleMeans)
 #   detach(2)
-#   sc
+#   mm
 # })
-# rm(regionLs)
-# attach("regional_coexpression/whole_brain/meanCor.Rdata")
-# sc_wb <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
-# colnames(sc_wb) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc_wb), "gene_symbol"]
-# rownames(sc_wb) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc_wb), "gene_symbol"]
-# detach(2)
-# sc_list <- c(list(sc_wb), sc_list)
-# names(sc_list)[1] <- "whole_brain"
-# rm(sc_wb)
-# sc <- sapply(sc_list, function(x){mat2vec(x)})
-# sc <- as.data.frame(sc)
+# mm <- sapply(mm_list, function(x){mat2vec(x)})
+# mm <- as.data.frame(mm)
+
+### Load single correlations between polyQ genes ###
+sc_list <- lapply(regionLs, function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
+  print(f)
+  attach(f)
+  sc <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
+  colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
+  rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
+  detach(2)
+  sc
+})
+rm(regionLs)
+sc <- sapply(sc_list, function(x){mat2vec(x)})
+sc <- as.data.frame(sc)
 
 #Rank-sum test function
 ranksum <- function(a, b) {

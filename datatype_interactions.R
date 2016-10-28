@@ -38,17 +38,18 @@ names(regionLs) <- gsub(" ", "_", structureIDs$acronym)
 # mm <- as.data.frame(mm)
 
 ### Load single correlations between polyQ genes ###
-sc_list <- lapply(regionLs, function(x) {
-  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
-  print(f)
-  attach(f)
-  sc <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
-  colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
-  rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
-  detach(2)
-  sc
-})
-rm(regionLs)
+# sc_list <- lapply(regionLs, function(x) {
+#   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
+#   print(f)
+#   attach(f)
+#   sc <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
+#   colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
+#   rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
+#   detach(2)
+#   sc
+# })
+# rm(regionLs)
+load("resources/polyQ_correlations.RData")
 sc <- sapply(sc_list, function(x){mat2vec(x)})
 sc <- as.data.frame(sc)
 
@@ -77,7 +78,7 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
   labeledHeatmap(table, xLabels = NULL, yLabels = make.italic(rownames(table)), setStdMargins = FALSE,
                  xLabelsAdj = 0, zlim = c(0,1), colors = blueWhiteRed(200)[100:200], textMatrix = round(table, digits = 2))
   par(mar = c(20, 10, 20, 8));
-  cols <- c("Wb", gsub(" ", "_", structureIDs[, 2]))
+  cols <- structureIDs[,2]#c("Wb", gsub(" ", "_", structureIDs[, 2]))
   temp <- reshape(table, direction = "long", varying=cols, sep = "", v.names = "coexpression", timevar = "region", times = cols)
   boxplot(temp$coexpression~temp$x*temp$region, las = 2, col = c("yellow", "darkseagreen"),
           main = main,
@@ -110,7 +111,7 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
 # 
 # dev.off()
 
-# ### Plot results using single correlation between two polyQ genes ###
+# ### Plot results ###
 pdf(file = "datatype_interactions3.pdf", 12, 16)
 
 #Associations bassed on age-at-onset
@@ -129,7 +130,7 @@ plot.associations(sc, genotype_pairs[, "HD_anxiety"], main = "Effect on anxiety 
 plot.associations(sc, genotype_pairs[, "HD_irritability"], main = "Effect on irritability score in HD patients")
 plot.associations(sc, genotype_pairs[, "HD_cognition"], main = "Effect on cognition score in HD patients")
 plot.associations(sc, genotype_pairs[, "SCA_total"], main = "Effect on SCA patients")
-plot.associations(sc, genotype_pairs[, "HD_total"], main = "Effect on HD patients")
+#plot.associations(sc, genotype_pairs[, "HD_total"], main = "Effect on HD patients") # all 1's, no 0's
 plot.associations(sc, genotype_pairs[, "SCA_and_HD"], main = "Effect on SCA and HD patients")
 
 dev.off()

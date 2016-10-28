@@ -26,16 +26,16 @@ mat2vec <- function(x){
 # Load module means (averaged co-expression between two modules with 25 genes each) of regions
 regionLs <- split(structureIDs, seq(nrow(structureIDs)))
 names(regionLs) <- gsub(" ", "_", structureIDs$acronym)
-# mm_list <- lapply(regionLs, function(x) {
-#   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
-#   print(f)
-#   attach(f)
-#   mm <- abs(moduleMeans)
-#   detach(2)
-#   mm
-# })
-# mm <- sapply(mm_list, function(x){mat2vec(x)})
-# mm <- as.data.frame(mm)
+mm_list <- lapply(regionLs, function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
+  print(f)
+  attach(f)
+  mm <- abs(moduleMeans)
+  detach(2)
+  mm
+})
+mm <- sapply(mm_list, function(x){mat2vec(x)})
+mm <- as.data.frame(mm)
 
 ### Load single correlations between polyQ genes ###
 # sc_list <- lapply(regionLs, function(x) {
@@ -111,7 +111,7 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
 # 
 # dev.off()
 
-# ### Plot results ###
+### Plot result (direct correlations) ###
 pdf(file = "datatype_interactions3.pdf", 12, 16)
 
 #Associations bassed on age-at-onset
@@ -132,5 +132,29 @@ plot.associations(sc, genotype_pairs[, "HD_cognition"], main = "Effect on cognit
 plot.associations(sc, genotype_pairs[, "SCA_total"], main = "Effect on SCA patients")
 #plot.associations(sc, genotype_pairs[, "HD_total"], main = "Effect on HD patients") # all 1's, no 0's
 plot.associations(sc, genotype_pairs[, "SCA_and_HD"], main = "Effect on SCA and HD patients")
+
+dev.off()
+
+### Plot result (direct correlations) ###
+pdf(file = "datatype_interactions4.pdf", 12, 16)
+
+#Associations bassed on age-at-onset
+plot.associations(mm, genotype_pairs[, "SCA2_AAO"], main = "Effect on age-at-onset in SCA2 patients")
+plot.associations(mm, genotype_pairs[, "SCA3_AAO"], main = "Effect on age-at-onset in SCA3 patients")
+plot.associations(mm, genotype_pairs[, "SCA6_AAO"], main = "Effect on age-at-onset in SCA6 patients")
+plot.associations(mm, genotype_pairs[, "SCA7_AAO"], main = "Effect on age-at-onset in SCA7 patients")
+
+plot.associations(mm, genotype_pairs[, "HD_AAO"], main = "Effect on age-at-onset in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_BMI"], main = "Effect on BMI in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_motor"], main = "Effect on motor in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_functional"], main = "Effect on functional score in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_behavioral"], main = "Effect on behavioral score in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_depression"], main = "Effect on depression score in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_anxiety"], main = "Effect on anxiety score in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_irritability"], main = "Effect on irritability score in HD patients")
+plot.associations(mm, genotype_pairs[, "HD_cognition"], main = "Effect on cognition score in HD patients")
+plot.associations(mm, genotype_pairs[, "SCA_total"], main = "Effect on SCA patients")
+#plot.associations(mm, genotype_pairs[, "HD_total"], main = "Effect on HD patients") # all 1's, no 0's
+plot.associations(mm, genotype_pairs[, "SCA_and_HD"], main = "Effect on SCA and HD patients")
 
 dev.off()

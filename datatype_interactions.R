@@ -53,6 +53,7 @@ mm <- as.data.frame(mm)
 # })
 # rm(regionLs)
 load("resources/polyQ_correlations.RData")
+sc_list <- sc_list[!(names(sc_list) %in% c("CbN","BF","GP"))]
 sc <- sapply(sc_list, function(x){mat2vec(x)})
 sc <- as.data.frame(sc)
 
@@ -81,11 +82,11 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
   labeledHeatmap(table, xLabels = NULL, yLabels = make.italic(rownames(table)), setStdMargins = FALSE,
                  xLabelsAdj = 0, zlim = c(0,1), colors = blueWhiteRed(200)[100:200], textMatrix = round(table, digits = 2))
   par(mar = c(20, 10, 20, 8));
-  cols <- structureIDs[,2]#c("Wb", gsub(" ", "_", structureIDs[, 2]))
+  cols <- structureIDs[,2]
   temp <- reshape(table, direction = "long", varying=cols, sep = "", v.names = "coexpression", timevar = "region", times = cols)
   boxplot(temp$coexpression~temp$x*temp$region, las = 2, col = c("yellow", "darkseagreen"),
           main = main,
-          at = c(1:30)[-seq(3, 30, 3)], ylab = "co-expression", cex.axis = 1.5, cex.lab = 1.5)
+          at = c(1:(length(cols)*3))[-seq(3, length(cols)*3, 3)], ylab = "co-expression", cex.axis = 1.5, cex.lab = 1.5)
 }
 
 ### Plot results using averaged correlation between two polyQ modules ###

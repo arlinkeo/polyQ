@@ -12,8 +12,14 @@ load("resources/polyQ_expr.RData")
 genepairs <- t(combn(polyQgenes, 2))
 rownames(genepairs) <- apply(genepairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
 
-lapply(names(donorList), function(d){
-  expr <- donorList[[d]]
+# Z-score normalize per gene across samples
+donorList2 <- lapply(donorList, function(d){
+  t(scale(t(d)))
+})
+
+# Add colors and plot 
+lapply(names(donorList2), function(d){
+  expr <- donorList2[[d]]
   colors <- sapply(colnames(expr), function(x){
     clr <- ontology[x, 'color_hex_triplet']
     if (nchar(clr) == 5) {paste("#0", clr, sep = "")}

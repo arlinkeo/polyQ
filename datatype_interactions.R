@@ -9,6 +9,9 @@ options(stringsAsFactors = FALSE)
 load("resources/polyQ.RData")
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
+# remove brain regions wit low number of samples
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ]
+
 #Load interaction info from literature
 genotype_pairs <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
 genepairs <- rownames(genotype_pairs)

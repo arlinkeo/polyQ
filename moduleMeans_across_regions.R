@@ -4,6 +4,8 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 load("resources/polyQ.RData")
+# remove brain regions wit low number of samples
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ]
 
 ###Cytoscape circular plots###
 # load("whole_brain/moduleMeans.RData")
@@ -25,27 +27,19 @@ load("resources/polyQ.RData")
 regionLs <- split(structureIDs, seq(nrow(structureIDs)))
 names(regionLs) <- gsub(" ", "_", structureIDs$name)
 mm_list <- lapply(regionLs, function(x) {
-  f <- paste(gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/moduleMeans_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
   mm <- moduleMeans
-  #mm <- abs(moduleMeans)
   detach(2)
   mm
 })
-attach("whole_brain/moduleMeans.Rdata")
-mm_wb <- moduleMeans
-#mm_wb <- abs(moduleMeans)
-detach(2)
-mm_list <- c(list(mm_wb), mm_list)
-names(mm_list)[1] <- "whole_brain"
-rm(mm_wb, regionLs)
 
 #Table with regional variance based on corr. values
 pQpairs <- t(combn(polyQgenes, 2))
 rowpairs <- apply(pQpairs, 1, function(x){paste( x[1], "-", x[2], sep = "")})
 rsVar <- apply(simplify2array(mm_list), 1:2, var)
-# cyt <- exportNetworkToCytoscape(rsVar, edgeFile = "moduleMeansEdges_variance.txt", threshold = 0.0)
+# cyt <- exportNetworkToCytoscape(rsVar, edgeFile = "moduleMeansEdges_variance2.txt", threshold = 0.0)
 regional_variance <- apply(pQpairs, 1, function(x){rsVar[x[1], x[2]]})
 regions <- apply(pQpairs, 1, function(x){
   gene1 <- x[1]

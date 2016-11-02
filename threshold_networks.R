@@ -1,32 +1,57 @@
 # select correlated genes based on a corr. threshold of 0.6?
 
-setwd("C:/Users/dkeo/Documents/Human-brain-project/polyQgenes")
+setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-load("polyQ.RData")
-probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
+load("resources/polyQ.RData")
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ] # remove structures from list
+probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 #####Load Data#########
 
 #Load mean corr. data across 6 brains. and select based on threshold
-regionLs <- split(structureIDs, seq(nrow(structureIDs)))
-names(regionLs) <- gsub(" ", "_", structureIDs$name)
-regionLs <- lapply(regionLs, function(x) {
-  f <- paste(gsub(" ", "_", x[3]), "/polyQgenes_", x[2], ".RData", sep = "")
+structures <- split(structureIDs, seq(nrow(structureIDs)))
+names(structures) <- gsub(" ", "_", structureIDs$name)
+
+regionLs <- lapply(structures, function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/polyQgenes_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
-  selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.75)))})
+  selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.60)))})
   selection <- unlist(selection)
   matrix_selection <- meanCor[selection, selection]
   detach(2)
   matrix_selection
 })
+save(regionLs, file = "resources/regionLs_threshold060.RData")
 
-save(regionLs, file = "regionLs_threshold075.RData")
+regionLs <- lapply(structures, function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/polyQgenes_", x[2], ".RData", sep = "")
+  print(f)
+  attach(f)
+  selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.70)))})
+  selection <- unlist(selection)
+  matrix_selection <- meanCor[selection, selection]
+  detach(2)
+  matrix_selection
+})
+save(regionLs, file = "resources/regionLs_threshold070.RData")
+
+regionLs <- lapply(structures, function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
+  print(f)
+  attach(f)
+  selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.80)))})
+  selection <- unlist(selection)
+  matrix_selection <- meanCor[selection, selection]
+  detach(2)
+  matrix_selection
+})
+save(regionLs, file = "resources/regionLs_threshold080.RData")
 
 ##########################################################
 load("regionLs_threshold080.RData")

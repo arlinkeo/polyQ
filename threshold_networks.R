@@ -92,7 +92,7 @@ dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapp
 make.table <- function(x){
   table <- sapply(x, function(y){
     pQidx <- which(colnames(y) %in% pQEntrezIDs)
-    corr_genes <- sapply(c(1:9), function(i){
+    corr_genes <- sapply(c(1:9), function(i){# number of correlated genes
       if (i < 9){pQidx[i+1] - pQidx[i] - 1} #Minus the polyQ gene itself
       else {dim(y)[1] - pQidx[i]}
     })
@@ -128,4 +128,19 @@ dev.off()
 ### Check for overlap in polyQ gene sets per region ###
 
 load("resources/regionLs_threshold070.RData")
+
+# Function lists duplicates in one region
+duplicates <- function(x){
+  pQidx <- which(colnames(x) %in% pQEntrezIDs)
+  idx_dups <- which(duplicated(colnames(x)))
+  dups_id <- colnames(x)[idx_dups]
+  res <- lapply(dups_id, function(id){ # for each duplicated gene, output list of polyQ sets
+    col_idx <- which(colnames(x) == id)
+    pqsets <- lapply(col_idx, function(y){
+      polyQgenes[tail(which(pQidx < y), n = 1)]
+    })
+    c(entrezId2Name(id), pqsets)
+  })
+}
+
 dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapply(colnames(x)[idx], entrezId2Name)}) 

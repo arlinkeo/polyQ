@@ -143,4 +143,4 @@ duplicates <- function(x){
   })
 }
 
-dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapply(colnames(x)[idx], entrezId2Name)}) 
+duplicates_070 <- lapply(regionLs, function(x){duplicates(x)})

@@ -26,16 +26,6 @@ regionLs <- lapply(regionLs, function(x) {
   matrix_selection
 })
 
-# add top 500 of whole brain to list
-attach("whole_brain/meanCor.Rdata")
-selection_wb <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.75)))})
-selection_wb <- unlist(selection_wb)
-matrix_selection_wb <- meanCor[selection_wb, selection_wb]
-detach(2)
-regionLs <- c(list(matrix_selection_wb), regionLs)
-names(regionLs)[1] <- "whole_brain"
-rm(selection_wb, matrix_selection_wb)
-
 save(regionLs, file = "regionLs_threshold075.RData")
 
 ##########################################################

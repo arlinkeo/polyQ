@@ -105,13 +105,13 @@ make.table <- function(x){
 }
 
 roworder <- c("AR", "CACNA1A", "ATXN3", "ATN1", "HTT", "ATXN2", "ATXN1", "ATXN7", "TBP", "Total")
-colorder <- c("cerebellum", "globus_pallidus", "basal_forebrain", "striatum", "mesencephalon", "pons", "hypothalamus", "frontal_lobe", "whole_brain")
+colorder <- c("striatum", "mesencephalon", "pons", "hypothalamus", "frontal_lobe", "cerebellar_cortex", "brain")
 
 #Sort and plot table
 pdf(file = "regionLs_threshold.pdf", 8, 9)
 par(mar = c(2,6,12,3));
 lapply(c(8, 7, 6), function(x){
-  file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/polyQ_scripts/resources/regionLs_threshold0", x, "0.RData", sep = "")
+  file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/resources/regionLs_threshold0", x, "0.RData", sep = "")
   attach(file)
   table <- make.table(regionLs)
   #sorted_table <- table[c(order(apply(table[-10, ], 1, sum), decreasing = TRUE), 10), order(table["Total", ], decreasing = TRUE)]
@@ -121,6 +121,11 @@ lapply(c(8, 7, 6), function(x){
                  yLabels = c(make.italic(rownames(sorted_table)[-10]), rownames(sorted_table)[10]), colors = blueWhiteRed(200)[100:200], 
                  main = paste("Genes correlated >0.", x, " for each polyQ gene in different regions", sep = ), 
                  setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = sorted_table)
-  
 })
 dev.off()
+
+###############################################################
+### Check for overlap in polyQ gene sets per region ###
+
+load("resources/regionLs_threshold070.RData")
+dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapply(colnames(x)[idx], entrezId2Name)}) 

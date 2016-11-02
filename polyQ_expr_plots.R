@@ -14,22 +14,24 @@ ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 rownames(ontology) <- ontology$id
 
 #Read expression data
-donorList <- list("9861" = "9861",
-                  "10021" = "10021", 
-                  "12876" = "12876", 
-                  "14380" = "14380", 
-                  "15496" = "15496", 
-                  "15697" = "15697")
-donorList <- lapply(donorList, function(x){
-  gene_expr <- read.csv(paste("ABA_human_processed/gene_expr_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""), header = FALSE)
-  rownames(gene_expr) <- genes
-  sample_info <- read.csv(paste("ABA_human_processed/sample_info_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""))
-  colnames(gene_expr) <- sample_info$structure_id
-  gene_expr <- gene_expr[pQEntrezIDs, ]
-  rownames(gene_expr) <- sapply(rownames(gene_expr), entrezId2Name)
-  as.matrix(gene_expr)
-})
-remove(genes)
+# donorList <- list("9861" = "9861",
+#                   "10021" = "10021", 
+#                   "12876" = "12876", 
+#                   "14380" = "14380", 
+#                   "15496" = "15496", 
+#                   "15697" = "15697")
+# donorList <- lapply(donorList, function(x){
+#   gene_expr <- read.csv(paste("ABA_human_processed/gene_expr_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""), header = FALSE)
+#   rownames(gene_expr) <- genes
+#   sample_info <- read.csv(paste("ABA_human_processed/sample_info_normalized_microarray_donor", x, "_2014-11-11.csv", sep = ""))
+#   colnames(gene_expr) <- sample_info$structure_id
+#   gene_expr <- gene_expr[pQEntrezIDs, ]
+#   rownames(gene_expr) <- sapply(rownames(gene_expr), entrezId2Name)
+#   as.matrix(gene_expr)
+# })
+# remove(genes)
+
+load("resources/polyQ_expr.RData")
 
 ###############################################################################
 #Reduce samples to those that occur in all donors, and convert row- and colnames
@@ -68,6 +70,46 @@ pdf(file = "polyQ_expr_plots2.pdf", 60, 40) #80,30
 
 lapply(names(donorList), function(d){
   expr <- donorList[[d]]
+  expr <- expr[ , names(sort(sapply(colnames(expr), function(x) {ontology[x, 'graph_order']})))]
+  colors <- sapply(colnames(expr), function(x){
+    clr <- ontology[x, 'color_hex_triplet']
+    if (nchar(clr) == 5) {paste("#0", clr, sep = "")}
+    else {paste("#", clr, sep = "")}
+  })
+  colnames(expr) <- sapply(colnames(expr), function(x){ontology[x, 'acronym']})
+  par(mfrow = c(9, 1), oma = c(0, 0, 15, 0), lwd = 0.01);
+  sapply(rownames(expr), function(x){
+    barplot(expr[x, ], main = bquote(italic(.(x))), cex.main = 5, col = colors, las = 2, cex.names = 0.5, 
+            ylim = c(0, 10.5), yaxt = 'n')
+    axis(2, pos = 0, cex.axis = 3)
+  })
+  title(paste("Donor ", d, sep = ""), outer = TRUE, cex.main = 8)
+})
+
+dev.off()
+
+############################################################################
+### Plot per donor all samples from 6 regions: cerebellar cortex, striatum, mesencephalon, pons, hypothalamus, and frontal lobe. ###
+### whole brain is excluded ###
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus", "brain"), ] # remove structures from list
+
+#Select all region-specific samples
+sampleIds <- unlist(apply(structureIDs, 1, function(x){
+  ontologyRows <- grep(x[1], ontology$structure_id_path)
+  selectIds <- as.character(ontology$id[ontologyRows])
+  print(paste(length(selectIds), "selected structure id's in", x[3]))
+  selectIds
+}))
+
+# Plot
+pdf(file = "polyQ_expr_plots3.pdf", 60, 40) #80,30
+
+lapply(names(donorList), function(d){
+  expr <- donorList[[d]]
+  ids <- intersect(sampleIds, colnames(expr))
+  cols <- colnames(expr) %in% ids
+  expr <- expr[ , cols]
+  print(paste("Samples: ", length(which(cols)), "in donor", d))
   expr <- expr[ , names(sort(sapply(colnames(expr), function(x) {ontology[x, 'graph_order']})))]
   colors <- sapply(colnames(expr), function(x){
     clr <- ontology[x, 'color_hex_triplet']

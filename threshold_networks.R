@@ -10,14 +10,6 @@ probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
-#Add whole brain to structureID list
-ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-brainID <- ontology[ontology$name %in% "brain", ][ , c(1:3)]
-brainID[3] <- "whole_brain"
-brainID[2] <- "WB"
-allID <- rbind(brainID, structureIDs)
-allID[ , 3] <- gsub(" ", "_", allID[ , 3])
-
 #####Load Data#########
 
 #Load mean corr. data across 6 brains. and select based on threshold

@@ -18,7 +18,7 @@ structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- gsub(" ", "_", structureIDs$name)
 
 regionLs <- lapply(structures, function(x) {
-  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/polyQgenes_", x[2], ".RData", sep = "")
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
   selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.60)))})
@@ -30,7 +30,7 @@ regionLs <- lapply(structures, function(x) {
 save(regionLs, file = "resources/regionLs_threshold060.RData")
 
 regionLs <- lapply(structures, function(x) {
-  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/polyQgenes_", x[2], ".RData", sep = "")
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
   print(f)
   attach(f)
   selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.70)))})

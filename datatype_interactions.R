@@ -89,32 +89,6 @@ plot.associations <- function(mat, x, main = ""){ # x is a vector with binary as
           at = c(1:(length(cols)*3))[-seq(3, length(cols)*3, 3)], ylab = "co-expression", cex.axis = 1.5, cex.lab = 1.5)
 }
 
-### Plot results using averaged correlation between two polyQ modules ###
-# pdf(file = "datatype_interactions2.pdf", 12, 16)
-# par(mar = c(20, 10, 20, 8));
-# boxplot(mm, las = 2, ylab = "co-expression", main = "Co-expression distribution of polyQ modules in different brain areas",
-#         cex.axis = 1.5, cex.lab = 1.5)
-
-#Associations based on age-at-onset
-# plot.associations(mm, genotype_pairs[, 1], main = "Effect on age-at-onset, based on interaction model")
-# combined1 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 2])
-# plot.associations(mm, combined1, main = "Effect on age-at-onset, based on interaction and single gene model")
-# 
-# #Associations based on age-at-onset and other phenotypes
-# combined2 <- bitwOr(genotype_pairs[, 1], genotype_pairs[, 3])
-# plot.associations(mm, combined2, main = "Effect on age-at-onset and other phenotypes, based on interaction model")
-# combined3 <- bitwOr(genotype_pairs[, 3], genotype_pairs[, 4])
-# combined <- bitwOr(combined1, combined3)
-# plot.associations(mm, combined, main = "Effect on age-at-onset and other phenotypes, based on interaction and single gene model")
-# 
-# #Associations based on age-at-onset and other phenotypes in HD patients (Stuitje report)
-# plot.associations(mm, genotype_pairs[, 5], main = "Effect on age-at-onset and other phenotypes in HD patients, based on interaction and single gene model")
-# 
-# #Associations based on age-at-onset and other phenotypes in SCA patients
-# plot.associations(mm, genotype_pairs[, 6], main = "Effect on age-at-onset and other phenotypes in SCA patients, based on interaction and single gene model")
-# 
-# dev.off()
-
 ### Plot result (direct correlations) ###
 pdf(file = "datatype_interactions3.pdf", 12, 16)
 

@@ -1,4 +1,4 @@
-# select correlated genes based on a corr. threshold of 0.6?
+# select correlated genes based on a corr. threshold
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
@@ -123,31 +123,3 @@ lapply(c(8, 7, 6), function(x){
                  setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = sorted_table)
 })
 dev.off()
-
-###############################################################
-### Check for overlap in polyQ gene sets per region ###
-
-load("resources/regionLs_threshold070.RData")
-
-# Function lists duplicates in one region
-duplicates <- function(x){
-  pQidx <- which(colnames(x) %in% pQEntrezIDs)
-  idx_dups <- which(duplicated(colnames(x)))
-  dups_id <- colnames(x)[idx_dups]
-  bin_matrix <- matrix(0, length(dups_id), length(polyQgenes), dimnames = list(dups_id, polyQgenes))
-  for (id in dups_id) { # for each duplicated gene, output list of polyQ sets
-    col_idx <- which(colnames(x) == id)
-    pqsets <- sapply(col_idx, function(y){ polyQgenes[tail(which(pQidx < y), n = 1)] })
-    for (pq in pqsets) {
-      bin_matrix[id, pq] <- 1
-    }
-  }
-  rownames(bin_matrix) <- lapply(rownames(bin_matrix), entrezId2Name)
-  bin_matrix
-}
-
-duplicates_070 <- lapply(regionLs, function(x){duplicates(x)})
-
-genepairs <- t(combn(polyQgenes, 2))
-rownames(genepairs) <- apply(genepairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
-

@@ -134,13 +134,20 @@ duplicates <- function(x){
   pQidx <- which(colnames(x) %in% pQEntrezIDs)
   idx_dups <- which(duplicated(colnames(x)))
   dups_id <- colnames(x)[idx_dups]
-  res <- lapply(dups_id, function(id){ # for each duplicated gene, output list of polyQ sets
+  bin_matrix <- matrix(0, length(dups_id), length(polyQgenes), dimnames = list(dups_id, polyQgenes))
+  for (id in dups_id) { # for each duplicated gene, output list of polyQ sets
     col_idx <- which(colnames(x) == id)
-    pqsets <- lapply(col_idx, function(y){
-      polyQgenes[tail(which(pQidx < y), n = 1)]
-    })
-    c(entrezId2Name(id), pqsets)
-  })
+    pqsets <- sapply(col_idx, function(y){ polyQgenes[tail(which(pQidx < y), n = 1)] })
+    for (pq in pqsets) {
+      bin_matrix[id, pq] <- 1
+    }
+  }
+  rownames(bin_matrix) <- lapply(rownames(bin_matrix), entrezId2Name)
+  bin_matrix
 }
 
 duplicates_070 <- lapply(regionLs, function(x){duplicates(x)})
+
+genepairs <- t(combn(polyQgenes, 2))
+rownames(genepairs) <- apply(genepairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
+

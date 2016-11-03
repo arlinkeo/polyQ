@@ -26,7 +26,7 @@ regionLs <- lapply(structures, function(x) {
   detach(2)
   selection
 })
-save(regionLs, file = "resources/regionLs_threshold060.RData")
+save(regionLs, file = "resources/genesets_threshold060.RData")
 
 regionLs <- lapply(structures, function(x) {
   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
@@ -37,7 +37,7 @@ regionLs <- lapply(structures, function(x) {
   detach(2)
   selection
 })
-save(regionLs, file = "resources/regionLs_threshold070.RData")
+save(regionLs, file = "resources/genesets_threshold070.RData")
 
 regionLs <- lapply(structures, function(x) {
   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
@@ -48,7 +48,7 @@ regionLs <- lapply(structures, function(x) {
   detach(2)
   selection
 })
-save(regionLs, file = "resources/regionLs_threshold080.RData")
+save(regionLs, file = "resources/genesets_threshold080.RData")
 
 ##########################################################
 load("regionLs_threshold080.RData")

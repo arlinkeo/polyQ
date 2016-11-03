@@ -22,10 +22,9 @@ regionLs <- lapply(structures, function(x) {
   print(f)
   attach(f)
   selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.60)))})
-  selection <- unlist(selection)
-  matrix_selection <- meanCor[selection, selection]
+  names(selection) <- pQEntrezIDs
   detach(2)
-  matrix_selection
+  selection
 })
 save(regionLs, file = "resources/regionLs_threshold060.RData")
 
@@ -34,10 +33,9 @@ regionLs <- lapply(structures, function(x) {
   print(f)
   attach(f)
   selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.70)))})
-  selection <- unlist(selection)
-  matrix_selection <- meanCor[selection, selection]
+  names(selection) <- pQEntrezIDs
   detach(2)
-  matrix_selection
+  selection
 })
 save(regionLs, file = "resources/regionLs_threshold070.RData")
 
@@ -46,10 +44,9 @@ regionLs <- lapply(structures, function(x) {
   print(f)
   attach(f)
   selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.80)))})
-  selection <- unlist(selection)
-  matrix_selection <- meanCor[selection, selection]
+  names(selection) <- pQEntrezIDs
   detach(2)
-  matrix_selection
+  selection
 })
 save(regionLs, file = "resources/regionLs_threshold080.RData")
 

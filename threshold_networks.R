@@ -96,33 +96,19 @@ dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapp
 
 ######################################################################################################
 #Number of genes correlated for each polyQ gene in different regions with different thresholds
-
-make.table <- function(x){
-  table <- sapply(x, function(y){
-    pQidx <- which(colnames(y) %in% pQEntrezIDs)
-    corr_genes <- sapply(c(1:9), function(i){# number of correlated genes
-      if (i < 9){pQidx[i+1] - pQidx[i] - 1} #Minus the polyQ gene itself
-      else {dim(y)[1] - pQidx[i]}
-    })
-    names(corr_genes) <- sapply(pQEntrezIDs, entrezId2Name)
-    corr_genes
-  })
-  table <- rbind(table, apply(table, 2, sum))
-  rownames(table)[10] <- "Total"
-  table
-}
-
-roworder <- c("AR", "CACNA1A", "ATXN3", "ATN1", "HTT", "ATXN2", "ATXN1", "ATXN7", "TBP", "Total")
-colorder <- c("striatum", "mesencephalon", "pons", "hypothalamus", "frontal_lobe", "cerebellar_cortex", "brain")
+roworder <- c("ATN1", "CACNA1A", "HTT", "AR", "ATXN2", "ATXN1", "ATXN3", "ATXN7", "TBP", "Total")
+colorder <- c("striatum", "pons", "frontal_lobe", "mesencephalon", "hypothalamus", "brain", "cerebellar_cortex")
 
 #Sort and plot table
 pdf(file = "regionLs_threshold.pdf", 8, 9)
 par(mar = c(2,6,12,3));
-lapply(c(8, 7, 6), function(x){
-  file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/resources/regionLs_threshold0", x, "0.RData", sep = "")
+lapply(c(5:8), function(x){
+  file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/resources/genesets_threshold0", x, "0.RData", sep = "")
   attach(file)
-  table <- make.table(regionLs)
-  #sorted_table <- table[c(order(apply(table[-10, ], 1, sum), decreasing = TRUE), 10), order(table["Total", ], decreasing = TRUE)]
+  table <- sapply(regionLs, function(x){sapply(x, length)}) -1
+  rownames(table) <- sapply(rownames(table), entrezId2Name)
+  Total <- apply(table, 2, sum)
+  table <- rbind(table, Total)
   sorted_table <- table[roworder, colorder]
   detach(2)
   labeledHeatmap(replace(sorted_table, which(sorted_table == 0), NA), xLabels = gsub("_", " ", colnames(sorted_table)), xLabelsPosition = "top", 

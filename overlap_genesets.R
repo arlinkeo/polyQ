@@ -31,7 +31,7 @@ asssociations <- asssociations[rownames(genepairs), ]
 
 #Count number of overlapping genes between two polyQ sets, combine with associations info, and plot
 pdf(file = "overlap_genesets.pdf", 12, 16)
-for (i in 6:8) {
+for (i in 5:8) {
   f <- paste("resources/genesets_threshold0", i,"0.RData", sep = "")
   attach(f)
   table <- sapply(regionLs, overlap)

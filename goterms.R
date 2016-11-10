@@ -11,7 +11,6 @@ structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basa
 structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 load("resources/genesets_threshold070.RData")
 region.acronym <- function(x) {structureIDs[structureIDs$name %in% x, ]$acronym}
 # Open connection to DAVID

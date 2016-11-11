@@ -46,13 +46,26 @@ ll <- lapply(structures, function(r){
   })
 })
 
-# Plot table
-table <- sapply(ll, overlap)
-table <- cbind(table, asssociations)
-table <- table[order(-table[, ncol(table)]), ]
+# Plot table with number of terms in each geneset
+pdf(file = "number_of_goterms.pdf", 8, 9)
+par(mar = c(2,6,12,3));
+terms_table <- sapply(ll, function(x){sapply(x, length)})
+rownames(terms_table) <- sapply(rownames(terms_table), entrezId2Name)
+Total <- apply(terms_table, 2, sum)
+terms_table <- rbind(terms_table, Total)
+labeledHeatmap(replace(terms_table, which(terms_table == 0), NA), xLabels = gsub("_", " ", colnames(terms_table)), xLabelsPosition = "top", 
+               yLabels = c(make.italic(rownames(terms_table)[-10]), rownames(terms_table)[10]), colors = blueWhiteRed(200)[100:200], 
+               main = paste("Number of GO terms in genesets correlated >0.7 for each polyQ gene in different regions", sep = ), 
+               setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = terms_table)
+dev.off()
+
+# Plot table of numbers of overlapping terms
+overlap_table <- sapply(ll, overlap)
+overlap_table <- cbind(overlap_table, asssociations)
+overlap_table <- overlap_table[order(-overlap_table[, ncol(overlap_table)]), ]
 pdf(file = "overlap_goterms.pdf", 12, 16)
 par(mar = c(6, 10, 15, 4));
-labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
+labeledHeatmap(as.matrix((overlap_table > 0) + 0), xLabels = colnames(overlap_table), yLabels = make.italic(rownames(overlap_table)), 
                setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
-               textMatrix = table, main = paste("Overlap of GO terms between two polyQ gene sets with genes correlated >0.7", sep = ""))
+               textMatrix = overlap_table, main = paste("Overlap of GO terms between two polyQ gene sets with genes correlated >0.7", sep = ""))
 dev.off()

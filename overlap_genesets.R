@@ -40,7 +40,7 @@ for (i in 5:8) {
   table <- table[order(-table[, ncol(table)]), ]
   par(mar = c(6, 10, 15, 4));
   labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
-                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"),
+                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
                  textMatrix = table, main = paste("Overlap between two polyQ gene sets with genes correlated >0.", i, sep = ""))
 }
 dev.off()

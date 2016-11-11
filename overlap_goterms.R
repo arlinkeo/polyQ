@@ -45,6 +45,8 @@ ll <- lapply(structures, function(r){
     goList <- if (file.exists(fName)){read.csv(fName, header = TRUE, sep = "\t")[ , 2]} else {NULL}
   })
 })
+
+# Plot table
 table <- sapply(ll, overlap)
 table <- cbind(table, asssociations)
 table <- table[order(-table[, ncol(table)]), ]

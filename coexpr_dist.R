@@ -37,6 +37,7 @@ quantiles <- sapply(names(coexpr_dist), function(r){
   m <- coexpr_dist[[r]]
   res <- sapply(pQEntrezIDs, function(x){
     vector <- m[x, ]
+    vector <- vector[names(vector) !=  x] #remove corr. with itself
     par(mai = c(0.15, 0.15, 0.15, 0.15))
     hist(vector, breaks = seq(-1,1,by=0.05), xlab = NULL, ylab = NULL, xlim = c(-1, 1), ylim = c(0, 4000), main = NULL, cex.axis = 0.8)
     q95 <- quantile(vector, probs = 0.95)
@@ -55,3 +56,5 @@ quantiles
 mean(quantiles)
 median(quantiles)
 sd(quantiles)
+min(quantiles)
+max(quantiles)

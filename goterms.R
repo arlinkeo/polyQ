@@ -48,4 +48,4 @@ david
 info <- unlist(info, recursive = FALSE)
 names(info) <- sapply(names(info), function(s) {arr <- unlist(strsplit(s, "\\.")); paste(arr[1], entrezId2Name(arr[2]), sep = "_")})
 info
-save(info, file = "resources/davidgo_geneset_info.RData")
+save(info, file = "resources/davidgo_geneset_info050.RData")

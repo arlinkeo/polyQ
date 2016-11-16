@@ -96,8 +96,8 @@ dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapp
 
 ######################################################################################################
 #Number of genes correlated for each polyQ gene in different regions with different thresholds
-roworder <- c("ATN1", "CACNA1A", "HTT", "AR", "ATXN2", "ATXN1", "ATXN3", "ATXN7", "TBP", "Total")
-colorder <- c("striatum", "pons", "frontal_lobe", "mesencephalon", "hypothalamus", "brain", "cerebellar_cortex")
+#roworder <- c("ATN1", "CACNA1A", "HTT", "AR", "ATXN2", "ATXN1", "ATXN3", "ATXN7", "TBP", "Total")
+#colorder <- c("striatum", "pons", "frontal_lobe", "mesencephalon", "hypothalamus", "brain", "cerebellar_cortex")
 
 #Sort and plot table
 pdf(file = "regionLs_threshold.pdf", 8, 9)
@@ -109,11 +109,11 @@ lapply(c(5:8), function(x){
   rownames(table) <- sapply(rownames(table), entrezId2Name)
   Total <- apply(table, 2, sum)
   table <- rbind(table, Total)
-  sorted_table <- table[roworder, colorder]
+  #sorted_table <- table[roworder, colorder]
   detach(2)
-  labeledHeatmap(replace(sorted_table, which(sorted_table == 0), NA), xLabels = gsub("_", " ", colnames(sorted_table)), xLabelsPosition = "top", 
-                 yLabels = c(make.italic(rownames(sorted_table)[-10]), rownames(sorted_table)[10]), colors = blueWhiteRed(200)[100:200], 
+  labeledHeatmap(replace(table, which(table == 0), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
+                 yLabels = c(make.italic(rownames(table)[-10]), rownames(table)[10]), colors = blueWhiteRed(200)[100:200], 
                  main = paste("Genes correlated >0.", x, " for each polyQ gene in different regions", sep = ), 
-                 setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = sorted_table)
+                 setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
 })
 dev.off()

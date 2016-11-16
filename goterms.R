@@ -17,8 +17,8 @@ region.acronym <- function(x) {structureIDs[structureIDs$name %in% x, ]$acronym}
 # Open connection to DAVID
 david<-DAVIDWebService$new(email="D.L.Keo@tudelft.nl", 
                            url="https://david.abcc.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
-setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL", "KEGG_PATHWAY", "REACTOME_PATHWAY", "BIOCARTA", 
-                                 "BIOGRID_INTERACTION", "DIP", "INTACT", "MINT", "UCSC_TFBS"))
+setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL", "KEGG_PATHWAY", "BIOCARTA", 
+                                 "BIOGRID_INTERACTION", "DIP", "INTACT", "MINT"))
 
 # Background list from AHBA probe info
 bg_list <- probeInfo$entrez_id
@@ -27,16 +27,25 @@ bg
 
 # Obtain a list of GO terms for each gene set
 t <- 0.05 # EASE p-value threshold
-lapply(names(regionLs), function(r){
+regions <- names(regionLs)
+names(regions) <- regions
+info <- lapply(regions, function(r){
   lapply(regionLs[[r]], function(pq){
     if (length(pq) > 1){
       pqname <- entrezId2Name(pq[1])
-      listname <- paste(r, "_", pqname, sep = "")
+      listname <- paste(region.acronym(r), "_", pqname, sep = "")
+      print(paste("List name:", listname))
       result <- addList(david, pq, idType = "ENTREZ_GENE_ID", listName = listname, listType = "Gene")
-      result
+      print(result)
+      setCurrentBackgroundPosition(david, 1)
       fname <- paste("regional_coexpression/", r, "/goterms050_", region.acronym(r), "_", pqname, ".txt", sep = "")
       getFunctionalAnnotationChartFile(david, fname, threshold=t, count=2L)
+      result
     }
   })
 })
 david
+info <- unlist(info, recursive = FALSE)
+names(info) <- sapply(names(info), function(s) {arr <- unlist(strsplit(s, "\\.")); paste(arr[1], entrezId2Name(arr[2]), sep = "_")})
+info
+save(info, file = "resources/davidgo_geneset_info.RData")

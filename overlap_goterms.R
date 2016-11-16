@@ -41,31 +41,48 @@ ll <- lapply(structures, function(r){
     fName <- paste("regional_coexpression/", r[3], "/goterms050_", r[2], "_", pqName, ".txt", sep = "")
     print(fName)
     goList <- if (file.exists(fName)){
-      terms <- read.csv(fName, header = TRUE, sep = "\t", colClasses = "character")[ , 2]
-      if (length(terms) == 0){
+      terms <- read.csv(fName, header = TRUE, sep = "\t", colClasses = "character")
+      if (nrow(terms) == 0){
         print("...Removed")
-        file.remove(fName)
-        character(0)
+        #file.remove(fName)
+        NULL
       } else {
         terms
       }
     } else {
-      character(0)
+      NULL
       }
   })
 })
 
+# Lists without multiple testing
+ll1 <- lapply(ll, function(r){lapply(r, function(pq){pq$Term})})
+# Filter terms based on Benjamini p-value < 0.05
+ll2 <- lapply(ll, function(r){lapply(r, function(pq){pq[pq$Benjamini < 0.05, ]$Term})})
+
+rm(ll)# data overload
+
+
+
 # Plot table with number of terms in each geneset
 pdf(file = "number_of_goterms050.pdf", 8, 9)
 par(mar = c(2,6,12,3));
-terms_table <- sapply(ll, function(x){sapply(x, length)})
-rownames(terms_table) <- sapply(rownames(terms_table), entrezId2Name)
-Total <- apply(terms_table, 2, sum)
-terms_table <- rbind(terms_table, Total)
-labeledHeatmap(replace(terms_table, which(terms_table == 0), NA), xLabels = gsub("_", " ", colnames(terms_table)), xLabelsPosition = "top", 
-               yLabels = c(make.italic(rownames(terms_table)[-10]), rownames(terms_table)[10]), colors = blueWhiteRed(200)[100:200], 
-               main = paste("Number of GO terms in genesets correlated >0.5 for each polyQ gene in different regions", sep = ), 
-               setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = terms_table)
+# Without multiple testing
+terms_table1 <- sapply(ll1, function(r){sapply(r, length)})
+rownames(terms_table1) <- sapply(rownames(terms_table1), entrezId2Name)
+Total <- apply(terms_table1, 2, sum)
+terms_table1 <- rbind(terms_table1, Total)
+labeledHeatmap(replace(terms_table1, which(terms_table1 == 0), NA), xLabels = gsub("_", " ", colnames(terms_table1)), xLabelsPosition = "top", 
+               yLabels = c(make.italic(rownames(terms_table1)[-10]), rownames(terms_table1)[10]), colors = blueWhiteRed(200)[100:200], 
+               main = paste("Number of GO terms in genesets correlated >0.5 without multiple testing", sep = ), setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = terms_table1)
+# After multiple testing
+terms_table2 <- sapply(ll2, function(r){sapply(r, length)})
+rownames(terms_table2) <- sapply(rownames(terms_table2), entrezId2Name)
+Total <- apply(terms_table2, 2, sum)
+terms_table2 <- rbind(terms_table2, Total)
+labeledHeatmap(replace(terms_table2, which(terms_table2 == 0), NA), xLabels = gsub("_", " ", colnames(terms_table2)), xLabelsPosition = "top", 
+               yLabels = c(make.italic(rownames(terms_table2)[-10]), rownames(terms_table2)[10]), colors = blueWhiteRed(200)[100:200], 
+               main = paste("Number of GO terms in genesets correlated >0.5 after multiple testing (Benjamini < 0.05)", sep = ), setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = terms_table2)
 dev.off()
 
 # Plot table of numbers of overlapping terms

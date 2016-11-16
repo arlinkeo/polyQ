@@ -62,36 +62,35 @@ ll2 <- lapply(ll, function(r){lapply(r, function(pq){pq[pq$Benjamini < 0.05, ]$T
 
 rm(ll)# data overload
 
-
-
 # Plot table with number of terms in each geneset
+plot.numbers <- function(l, main = ""){
+  table <- sapply(l, function(r){sapply(r, length)})
+  rownames(table) <- sapply(rownames(table), entrezId2Name)
+  Total <- apply(table, 2, sum)
+  table <- rbind(table, Total)
+  labeledHeatmap(replace(table, which(table == 0), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
+                 yLabels = c(make.italic(rownames(table)[-10]), rownames(table)[10]), colors = blueWhiteRed(200)[100:200], 
+                 main = main, setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
+}
+
 pdf(file = "number_of_goterms050.pdf", 8, 9)
 par(mar = c(2,6,12,3));
-# Without multiple testing
-terms_table1 <- sapply(ll1, function(r){sapply(r, length)})
-rownames(terms_table1) <- sapply(rownames(terms_table1), entrezId2Name)
-Total <- apply(terms_table1, 2, sum)
-terms_table1 <- rbind(terms_table1, Total)
-labeledHeatmap(replace(terms_table1, which(terms_table1 == 0), NA), xLabels = gsub("_", " ", colnames(terms_table1)), xLabelsPosition = "top", 
-               yLabels = c(make.italic(rownames(terms_table1)[-10]), rownames(terms_table1)[10]), colors = blueWhiteRed(200)[100:200], 
-               main = paste("Number of GO terms in genesets correlated >0.5 without multiple testing", sep = ), setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = terms_table1)
-# After multiple testing
-terms_table2 <- sapply(ll2, function(r){sapply(r, length)})
-rownames(terms_table2) <- sapply(rownames(terms_table2), entrezId2Name)
-Total <- apply(terms_table2, 2, sum)
-terms_table2 <- rbind(terms_table2, Total)
-labeledHeatmap(replace(terms_table2, which(terms_table2 == 0), NA), xLabels = gsub("_", " ", colnames(terms_table2)), xLabelsPosition = "top", 
-               yLabels = c(make.italic(rownames(terms_table2)[-10]), rownames(terms_table2)[10]), colors = blueWhiteRed(200)[100:200], 
-               main = paste("Number of GO terms in genesets correlated >0.5 after multiple testing (Benjamini < 0.05)", sep = ), setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = terms_table2)
+plot.numbers(ll1, main = paste("Number of GO terms without multiple testing", sep = ))
+plot.numbers(ll2, main = paste("Number of GO terms after multiple testing (Benjamini < 0.05)", sep = ))
 dev.off()
 
 # Plot table of numbers of overlapping terms
-overlap_table <- sapply(ll, overlap)
-overlap_table <- cbind(overlap_table, asssociations)
-overlap_table <- overlap_table[order(-overlap_table[, ncol(overlap_table)]), ]
+plot.overlap <- function(l, main = ""){
+  table <- sapply(l, overlap)
+  table <- cbind(table, asssociations)
+  table <- table[order(-table[, ncol(table)]), ]
+  labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
+                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
+                 textMatrix = table, main = main)
+}
+
 pdf(file = "overlap_goterms050.pdf", 12, 16)
 par(mar = c(6, 10, 15, 4));
-labeledHeatmap(as.matrix((overlap_table > 0) + 0), xLabels = colnames(overlap_table), yLabels = make.italic(rownames(overlap_table)), 
-               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
-               textMatrix = overlap_table, main = paste("Overlap of GO terms between two polyQ gene sets with genes correlated >0.5", sep = ""))
+plot.overlap(ll1, main = "Overlap of GO terms between two polyQ gene sets without multiple testing")
+plot.overlap(ll2, main = "Overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
 dev.off()

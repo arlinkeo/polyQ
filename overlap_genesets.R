@@ -25,9 +25,10 @@ overlap <- function(x) {
 }
 
 #Load asssociations info from literature
-asssociations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
-asssociations <- asssociations[, ncol(asssociations), drop = FALSE]
-asssociations <- asssociations[rownames(genepairs), ]
+associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
+col_select <- c("SCA_total", "HD_total", "SCA_or_HD")
+associations <- associations[, col_select, drop = FALSE]
+associations <- associations[rownames(genepairs), ]
 
 #Count number of overlapping genes between two polyQ sets, combine with associations info, and plot
 pdf(file = "overlap_genesets.pdf", 12, 16)
@@ -36,8 +37,18 @@ for (i in 5:8) {
   attach(f)
   table <- sapply(regionLs, overlap)
   detach(2)
-  table <- cbind(table, asssociations)
-  table <- table[order(-table[, ncol(table)]), ]
+  table <- cbind(table, associations)
+  # Sort rows by associations
+  SCA_and_HD <- which(bitwAnd(table$SCA_total, table$HD_total) == 1)
+  SCA <- which(table$SCA_total == 1)
+  only_SCA <- SCA[-which(SCA == SCA_and_HD)]
+  HD <- which(table$HD_total == 1)
+  only_HD <- HD[-which(HD == SCA_and_HD)]
+  only_HD <- only_HD[order(table[only_HD, ]$SCA_total)]
+  not_SCA_and_HD <- c(which(table$SCA_or_HD == 0), which(is.na(table$SCA_or_HD)))
+  order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
+  
+  table <- table[order, ]
   par(mar = c(6, 10, 15, 4));
   labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
                  setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,

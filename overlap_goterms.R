@@ -45,7 +45,7 @@ ll <- lapply(structures, function(r){
       terms <- read.csv(fName, header = TRUE, sep = "\t", colClasses = "character")
       if (nrow(terms) == 0){
         print("...Removed")
-        #file.remove(fName)
+        file.remove(fName)
         NULL
       } else {
         terms
@@ -84,7 +84,7 @@ dev.off()
 plot.overlap <- function(l, main = ""){
   table <- sapply(l, overlap)
   table <- cbind(table, associations)
-  # Sort according to associations
+  # Sort rows by associations
   SCA_and_HD <- which(bitwAnd(table$SCA_total, table$HD_total) == 1)
   SCA <- which(table$SCA_total == 1)
   only_SCA <- SCA[-which(SCA == SCA_and_HD)]

@@ -40,17 +40,51 @@ overlap <- function(x) {
   })
 }
 
-#Count number of overlapping genes between two polyQ sets, combine with associations info, and plot
-pdf(file = "overlap_genesets.pdf", 12, 16)
-for (i in 5:8) {
-  f <- paste("resources/genesets_threshold0", i,"0.RData", sep = "")
-  attach(f)
-  table <- sapply(regionLs, overlap)
-  detach(2)
-  table <- cbind(table, associations)
-  par(mar = c(6, 10, 15, 4));
-  labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
-                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
-                 textMatrix = table, main = paste("Overlap between two polyQ gene sets with genes correlated >0.", i, sep = ""))
+# Function to get significance of overlap using hypergeometric test.
+hyper.test <- function(x) {
+  apply(genepairs, 1, function(y){
+    geneset1 <- x[[y[1]]]
+    geneset2 <- x[[y[2]]]
+    overlap <- length(intersect(geneset1, geneset2))
+    ngs1 <- length(geneset1)
+    ngs2 <- length(geneset2)
+    totalGenes <- 19992
+    if (overlap != 0){
+    print(paste(cat(sapply(y, entrezId2Name), sep = "-"), 
+                ": phyper(", overlap, " - 1, ", ngs1, ", 19992 - ", ngs1, ", ", ngs2, ", lower.tail = FALSE)", sep = ""))
+    }
+    phyper(overlap - 1, ngs1, totalGenes - ngs1, ngs2, lower.tail = FALSE)
+  })
 }
+
+thresholds <- c("50" = "50", "60" = "60", "70" = "70", "80" = "80")
+
+# Load sets of gene sets for different thresholds
+geneSets <- lapply(thresholds, function(t) {
+  f <- paste("resources/genesets_threshold0", t,".RData", sep = "")
+  attach(f)
+  gs <- regionLs
+  detach(2)
+  gs
+})
+
+# Plot number of overlapping gens and its significance
+pdf(file = "overlap_genesets.pdf", 12, 16)
+par(mar = c(6, 10, 15, 4));
+lapply(thresholds, function(t) {
+  # Count number of overlapping genes between two polyQ sets, combine with associations info
+  table1 <- sapply(geneSets[[t]], overlap)
+  table1 <- cbind(table1, associations)
+  labeledHeatmap(as.matrix((table1 > 0) + 0), xLabels = colnames(table1), yLabels = make.italic(rownames(table1)),
+                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
+                 textMatrix = table1, main = paste("Overlap between two polyQ gene sets with genes correlated >0.", t, sep = ""))
+  # Get significance of overlap gene sets with hypergeometric test
+  table2 <- sapply(geneSets[[t]], hyper.test)
+  table2a <- cbind(1 - table2, associations)
+  table2b <- cbind(table2, associations)
+  labeledHeatmap(table2a, xLabels = colnames(table2b), yLabels = make.italic(rownames(table2b)),
+                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = blueWhiteRed(200)[100:200], plotLegend = FALSE,
+                 textMatrix = round(table2b, digits = 4), 
+                 main = paste("Significance of overlap between two polyQ gene sets with genes correlated >0.", t, sep = ""))
+})
 dev.off()

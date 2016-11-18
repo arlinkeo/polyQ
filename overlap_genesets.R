@@ -14,8 +14,8 @@ make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(
 
 #Load asssociations info from literature
 associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
-col_select <- c("SCA_total", "HD_total", "SCA_or_HD")
-associations <- associations[, col_select, drop = FALSE]
+# col_select <- c("SCA_total", "HD_total", "SCA_or_HD")
+# associations <- associations[, col_select, drop = FALSE]
 # Sort rows by associations
 SCA_and_HD <- which(bitwAnd(associations$SCA_total, associations$HD_total) == 1)
 SCA <- which(associations$SCA_total == 1)
@@ -68,13 +68,15 @@ geneSets <- lapply(thresholds, function(t) {
   gs
 })
 
-# Plot number of overlapping gens and its significance
-pdf(file = "overlap_genesets.pdf", 12, 16)
-par(mar = c(6, 10, 15, 4));
+# Plot number of overlapping genes and its significance
+pdf(file = "overlap_genesets.pdf", 18, 24)
 lapply(thresholds, function(t) {
+  par(mar = c(6, 10, 15, 4))
+  layout(matrix(c(1:2), 2, 1))
   # Count number of overlapping genes between two polyQ sets, combine with associations info
   table1 <- sapply(geneSets[[t]], overlap)
   table1 <- cbind(table1, associations)
+  par(mai = c(0.5, 2, 3, 0.5))
   labeledHeatmap(as.matrix((table1 > 0) + 0), xLabels = colnames(table1), yLabels = make.italic(rownames(table1)),
                  setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
                  textMatrix = table1, main = paste("Overlap between two polyQ gene sets with genes correlated >0.", t, sep = ""))
@@ -82,6 +84,7 @@ lapply(thresholds, function(t) {
   table2 <- sapply(geneSets[[t]], hyper.test)
   table2a <- cbind(1 - table2, associations)
   table2b <- cbind(table2, associations)
+  par(mai = c(0.5, 2, 3, 0.5));
   labeledHeatmap(table2a, xLabels = colnames(table2b), yLabels = make.italic(rownames(table2b)),
                  setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = blueWhiteRed(200)[100:200], plotLegend = FALSE,
                  textMatrix = round(table2b, digits = 4), 

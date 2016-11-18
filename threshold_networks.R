@@ -105,15 +105,15 @@ par(mar = c(2,6,12,3));
 lapply(c(5:8), function(x){
   file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/resources/genesets_threshold0", x, "0.RData", sep = "")
   attach(file)
-  table <- sapply(regionLs, function(x){sapply(x, length)}) -1
+  table <- sapply(regionLs, function(x){sapply(x, length)})
   rownames(table) <- sapply(rownames(table), entrezId2Name)
   Total <- apply(table, 2, sum)
   table <- rbind(table, Total)
   #sorted_table <- table[roworder, colorder]
   detach(2)
-  labeledHeatmap(replace(table, which(table == 0), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
+  labeledHeatmap(replace(table, which(table == 1), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
                  yLabels = c(make.italic(rownames(table)[-10]), rownames(table)[10]), colors = blueWhiteRed(200)[100:200], 
-                 main = paste("Genes correlated >0.", x, " for each polyQ gene in different regions", sep = ), 
+                 main = paste("Genes correlated >0.", x, " for each polyQ gene in different regions", sep = ""), 
                  setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
 })
 dev.off()

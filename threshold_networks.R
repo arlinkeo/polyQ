@@ -97,7 +97,7 @@ dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapp
 ######################################################################################################
 #Number of genes correlated for each polyQ gene in different regions with different thresholds
 #roworder <- c("ATN1", "CACNA1A", "HTT", "AR", "ATXN2", "ATXN1", "ATXN3", "ATXN7", "TBP", "Total")
-#colorder <- c("striatum", "pons", "frontal_lobe", "mesencephalon", "hypothalamus", "brain", "cerebellar_cortex")
+colorder <- c("brain", "frontal_lobe", "striatum", "hypothalamus", "mesencephalon", "cerebellar_cortex", "pons")
 
 #Sort and plot table
 pdf(file = "regionLs_threshold.pdf", 8, 9)
@@ -109,7 +109,7 @@ lapply(c(5:8), function(x){
   rownames(table) <- sapply(rownames(table), entrezId2Name)
   Total <- apply(table, 2, sum)
   table <- rbind(table, Total)
-  #sorted_table <- table[roworder, colorder]
+  table <- table[ , colorder]
   detach(2)
   labeledHeatmap(replace(table, which(table == 1), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
                  yLabels = c(make.italic(rownames(table)[-10]), rownames(table)[10]), colors = blueWhiteRed(200)[100:200], 

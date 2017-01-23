@@ -12,11 +12,8 @@ structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
+name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
-
-#Prepare polyQ pairs
-genepairs <- t(combn(pQEntrezIDs, 2))
-rownames(genepairs) <- apply(genepairs, 1, function(x){paste(entrezId2Name(x[1]), "-", entrezId2Name(x[2]), sep = "")})
 
 # Function to count number of overlapping GO terms between two polyQ sets per region
 overlap <- function(x) {
@@ -30,9 +27,20 @@ overlap <- function(x) {
 
 #Load asssociations info from literature
 associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
-col_select <- c("SCA_total", "HD_total", "SCA_or_HD")
-associations <- associations[, col_select, drop = FALSE]
-associations <- associations[rownames(genepairs), ] # make sure gene-pair order is the same before concatenating 
+associations <- associations[ , c(15:17, 1:14)]
+# Sort rows by associations
+SCA_and_HD <- which(bitwAnd(associations$SCA_total, associations$HD_total) == 1)
+SCA <- which(associations$SCA_total == 1)
+only_SCA <- SCA[-which(SCA == SCA_and_HD)]
+HD <- which(associations$HD_total == 1)
+only_HD <- HD[-which(HD == SCA_and_HD)]
+only_HD <- only_HD[order(associations[only_HD, ]$SCA_total)]
+not_SCA_and_HD <- c(which(associations$SCA_or_HD == 0), which(is.na(associations$SCA_or_HD)))
+order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
+associations <- associations[order, ]
+
+# prepare gene pair matrix from rownames(associations) with entrezIds
+genepairs <- t(sapply(rownames(associations), function(x){as.character(sapply(unlist(strsplit(x, "-")), name2entrezId))}))
 
 # Load GO terms
 names(pQEntrezIDs) <- pQEntrezIDs
@@ -84,25 +92,16 @@ dev.off()
 plot.overlap <- function(l, main = ""){
   table <- sapply(l, overlap)
   table <- cbind(table, associations)
-  # Sort rows by associations
-  SCA_and_HD <- which(bitwAnd(table$SCA_total, table$HD_total) == 1)
-  SCA <- which(table$SCA_total == 1)
-  only_SCA <- SCA[-which(SCA == SCA_and_HD)]
-  HD <- which(table$HD_total == 1)
-  only_HD <- HD[-which(HD == SCA_and_HD)]
-  only_HD <- only_HD[order(table[only_HD, ]$SCA_total)]
-  not_SCA_and_HD <- c(which(table$SCA_or_HD == 0), which(is.na(table$SCA_or_HD)))
-  order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
-  
-  table <- table[order, ]
   colnames(table) <- gsub("_", " ", colnames(table))
   labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
                  setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
                  textMatrix = table, main = main)
 }
 
-pdf(file = "overlap_goterms050.pdf", 12, 16)
+pdf(file = "overlap_goterms050.pdf", 21, 28)
 par(mar = c(6, 10, 15, 4));
+layout(matrix(c(1:2), 2, 1))
+par(mai = c(0.5, 2, 3, 0.5))
 plot.overlap(ll1, main = "Overlap of GO terms between two polyQ gene sets without multiple testing")
 plot.overlap(ll2, main = "Overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
 dev.off()

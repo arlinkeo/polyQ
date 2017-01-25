@@ -30,12 +30,12 @@ t <- 0.05 # EASE p-value threshold
 regions <- names(regionLs)
 names(regions) <- regions
 info <- lapply(regions, function(r){
-  lapply(regionLs[[r]], function(pq){
-    if (length(pq) > 1){
-      pqname <- entrezId2Name(pq[1])
+  lapply(regionLs[[r]], function(geneSet){
+    if (length(geneSet) > 1){
+      pqname <- entrezId2Name(geneSet[1])
       listname <- paste(region.acronym(r), "_", pqname, sep = "")
       print(paste("List name:", listname))
-      result <- addList(david, pq, idType = "ENTREZ_GENE_ID", listName = listname, listType = "Gene")
+      result <- addList(david, geneSet, idType = "ENTREZ_GENE_ID", listName = listname, listType = "Gene")
       print(result)
       setCurrentBackgroundPosition(david, 1)
       fname <- paste("regional_coexpression/", r, "/goterms050_", region.acronym(r), "_", pqname, ".txt", sep = "")

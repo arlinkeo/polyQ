@@ -56,6 +56,7 @@ hyper.test <- function(x) {
   })
 }
 
+####### For different thresholds ##########
 thresholds <- c("50" = "50", "60" = "60", "70" = "70", "80" = "80")
 
 # Load sets of gene sets for different thresholds

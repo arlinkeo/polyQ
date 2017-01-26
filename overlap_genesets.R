@@ -135,3 +135,30 @@ lapply(thresholds, function(t) {
                  textMatrix = table2b, main = paste("Significance of overlap between two polyQ gene sets with genes correlated >0.", t, sep = ""))
 })
 dev.off()
+
+##### Add coexpression analysis of HD regions, only for gene sets with threshold > 0.5 ########
+load("resources/genesets_threshold050.RData")
+load("resources/genesets_threshold050_HDregion.RData")
+regionLs <- c(regionLs, HD_region = list(selection)) # Add gene sets from HD region to list of brain structures
+
+# Plot number of overlapping genes and its significance
+pdf(file = "overlap_genesets3.pdf", 21, 28)
+par(mar = c(6, 10, 15, 4))
+layout(matrix(c(1:2), 2, 1))
+# Count number of overlapping genes between two polyQ sets, combine with associations info
+table1 <- sapply(regionLs, overlap)
+table1 <- cbind(table1, associations)
+par(mai = c(0.5, 2, 3, 0.5))
+labeledHeatmap(as.matrix((table1 > 0) + 0), xLabels = colnames(table1), yLabels = make.italic(rownames(table1)),
+               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
+               textMatrix = table1, main = "Overlap between two polyQ gene sets with genes correlated >0.50")
+# Get significance of overlap gene sets with hypergeometric test
+table2 <- sapply(regionLs, hyper.test)
+table2a <- cbind(1 - table2, associations)
+table2 <- apply(table2, c(1,2), function(x){format(x, digits = 2)})
+table2b <- cbind(table2, associations)
+par(mai = c(0.5, 2, 3, 0.5));
+labeledHeatmap(table2a, xLabels = colnames(table2b), yLabels = make.italic(rownames(table2b)),
+               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = blueWhiteRed(200)[100:200], plotLegend = FALSE,
+               textMatrix = table2b, main = "Significance of overlap between two polyQ gene sets with genes correlated >0.50")
+dev.off()

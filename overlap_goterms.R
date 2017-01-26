@@ -1,4 +1,4 @@
-# Check for overlap in GO terms of gene sets per brain region
+# Check for overlap in functional terms of gene sets per brain region
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
@@ -7,23 +7,13 @@ options(stringsAsFactors = FALSE)
 #Prepare data and functions
 load("resources/polyQ.RData")
 structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ] # remove structures from list
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
+# structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
-
-# Function to count number of overlapping GO terms between two polyQ sets per region
-overlap <- function(x) {
-  apply(genepairs, 1, function(y){
-    termset1 <- x[[y[1]]]
-    termset2 <- x[[y[2]]]
-    terms <- intersect(termset1, termset2)
-    length(terms)
-  })
-}
 
 #Load asssociations info from literature
 associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
@@ -42,34 +32,55 @@ associations <- associations[order, ]
 # prepare gene pair matrix from rownames(associations) with entrezIds
 genepairs <- t(sapply(rownames(associations), function(x){as.character(sapply(unlist(strsplit(x, "-")), name2entrezId))}))
 
+# Function to count number of overlapping GO terms between two polyQ sets per region
+overlap <- function(x) {
+  apply(genepairs, 1, function(y){
+    termset1 <- x[[y[1]]]
+    termset2 <- x[[y[2]]]
+    terms <- intersect(termset1, termset2)
+    length(terms)
+  })
+}
+
+#Function to read Rdavid output
+read.RdavidOutput <- function(fileName){
+  if (file.exists(fileName)){
+    terms <- read.csv(fileName, header = TRUE, sep = "\t", colClasses = "character")
+    if (nrow(terms) == 0){
+      print("...Removed")
+      file.remove(fileName)
+      NULL
+    } else {
+      terms
+    }
+  } else {
+    NULL
+  }
+}
+
 # Load GO terms
 names(pQEntrezIDs) <- pQEntrezIDs
 ll <- lapply(structures, function(r){
   lapply(pQEntrezIDs, function(pq){
     pqName <- entrezId2Name(pq)
-    fName <- paste("regional_coexpression/", r[3], "/goterms050_", r[2], "_", pqName, ".txt", sep = "")
+    fName <- paste("regional_coexpression/", gsub(" ", "_", r[3]), "/goterms050_", r[2], "_", pqName, ".txt", sep = "")
     print(fName)
-    goList <- if (file.exists(fName)){
-      terms <- read.csv(fName, header = TRUE, sep = "\t", colClasses = "character")
-      if (nrow(terms) == 0){
-        print("...Removed")
-        file.remove(fName)
-        NULL
-      } else {
-        terms
-      }
-    } else {
-      NULL
-      }
+    read.RdavidOutput(fName)
   })
 })
-
+ll_HDregion <- lapply(pQEntrezIDs, function(pq){
+  pqName <- entrezId2Name(pq)
+  fName <- paste("HD_masks_Coppen2016/goterms050_HDregions", "_", pqName, ".txt", sep = "")
+  print(fName)
+  read.RdavidOutput(fName)
+})
+ll <- c(ll, HD_region = list(ll_HDregion))
+rm(ll_HDregion)
 # Lists without multiple testing
 ll1 <- lapply(ll, function(r){lapply(r, function(pq){pq$Term})})
 # Filter terms based on Benjamini p-value < 0.05
 ll2 <- lapply(ll, function(r){lapply(r, function(pq){pq[pq$Benjamini < 0.05, ]$Term})})
-
-rm(ll)# data overload
+rm(ll)
 
 # Plot table with number of terms in each geneset
 plot.numbers <- function(l, main = ""){

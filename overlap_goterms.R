@@ -93,6 +93,23 @@ plot.numbers <- function(l, main = ""){
                  main = main, setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
 }
 
+# Function to get significance of overlap using hypergeometric test.
+hyper.test <- function(x) {
+  apply(genepairs, 1, function(y){
+    termset1 <- x[[y[1]]]
+    termset2 <- x[[y[2]]]
+    overlap <- length(intersect(termset1, termset2))
+    ngs1 <- length(termset1)
+    ngs2 <- length(termset2)
+    totalTermes <- 19992
+    if (overlap != 0){
+      print(paste(cat(sapply(y, entrezId2Name), sep = "-"), 
+                  ": phyper(", overlap, " - 1, ", ngs1, ", 19992 - ", ngs1, ", ", ngs2, ", lower.tail = FALSE)", sep = ""))
+    }
+    phyper(overlap - 1, ngs1, totalTermes - ngs1, ngs2, lower.tail = FALSE)
+  })
+}
+
 pdf(file = "number_of_goterms050.pdf", 8, 9)
 par(mar = c(2,6,12,3));
 plot.numbers(ll1, main = paste("Number of GO terms without multiple testing", sep = ))
@@ -103,16 +120,28 @@ dev.off()
 plot.overlap <- function(l, main = ""){
   table <- sapply(l, overlap)
   table <- cbind(table, associations)
-  colnames(table) <- gsub("_", " ", colnames(table))
+  #colnames(table) <- gsub("_", " ", colnames(table))
   labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
                  setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
                  textMatrix = table, main = main)
+}
+
+# Plot table with significance of overlap
+plot.signif <- function(l, main = ""){
+  table <- sapply(l, hyper.test)
+  table_a <- cbind(1 - table, associations) # Manipulate plot function to get colors of significance right
+  table <- apply(table, c(1,2), function(x){format(x, digits = 2)})
+  table_b <- cbind(table, associations)
+  labeledHeatmap(table_a, xLabels = colnames(table_b), yLabels = make.italic(rownames(table_b)),
+                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = blueWhiteRed(200)[100:200], plotLegend = FALSE,
+                 textMatrix = table_b, main = main)
 }
 
 pdf(file = "overlap_goterms050.pdf", 21, 28)
 par(mar = c(6, 10, 15, 4));
 layout(matrix(c(1:2), 2, 1))
 par(mai = c(0.5, 2, 3, 0.5))
-plot.overlap(ll1, main = "Overlap of GO terms between two polyQ gene sets without multiple testing")
+#plot.overlap(ll1, main = "Overlap of GO terms between two polyQ gene sets without multiple testing")
 plot.overlap(ll2, main = "Overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
+plot.signif(ll2, main = "Significant overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
 dev.off()

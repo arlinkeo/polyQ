@@ -6,8 +6,6 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ] # remove structures from list
-# structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")

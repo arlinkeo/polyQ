@@ -25,7 +25,7 @@ setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_AL
 bg_list <- probeInfo$entrez_id # Background list from AHBA probe info
 bg <- addList(david, bg_list, idType = "ENTREZ_GENE_ID", listName = "AHBA background", listType = "Background")
 bg
-#setTimeOut(david, 80000)
+setTimeOut(david, 150000)
 t <- 0.05 # EASE p-value threshold
 info <- lapply(selection, function(geneSet){
   if (length(geneSet) > 1){
@@ -44,4 +44,4 @@ david
 info <- unlist(info, recursive = FALSE)
 names(info) <- sapply(names(info), function(s) {arr <- unlist(strsplit(s, "\\.")); paste(arr[1], entrezId2Name(arr[2]), sep = "_")})
 info
-save(info, file = "resources/davidgo_geneset_info050.RData")
+save(info, file = "../resources/davidgo_geneset_info050_HDregions.RData")

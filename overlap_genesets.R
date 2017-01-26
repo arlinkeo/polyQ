@@ -82,7 +82,7 @@ lapply(thresholds, function(t) {
                  textMatrix = table1, main = paste("Overlap between two polyQ gene sets with genes correlated >0.", t, sep = ""))
   # Get significance of overlap gene sets with hypergeometric test
   table2 <- sapply(geneSets[[t]], hyper.test)
-  table2a <- cbind(1 - table2, associations)
+  table2a <- cbind(1 - table2, associations) # Manipulate plot function to get colors of significance right
   table2 <- apply(table2, c(1,2), function(x){format(x, digits = 2)})
   table2b <- cbind(table2, associations)
   #table2b <- apply(table2b, c(1,2), function(x){if (x < 0.01) {format(x, digits = 2, scientific = T)} else {x}})

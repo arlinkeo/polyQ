@@ -6,7 +6,6 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-#structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ] # remove structures from list
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
@@ -62,7 +61,7 @@ regionLs <- lapply(structures, function(x) {
 save(regionLs, file = "resources/genesets_threshold080.RData")
 
 ##########################################################
-load("regionLs_threshold080.RData")
+load("resources/genesets_threshold050.RData")
 
 #Export network to Cytoscape and plot heatmaps
 lapply(c(1:9), function(x){
@@ -97,7 +96,7 @@ dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapp
 ######################################################################################################
 #Number of genes correlated for each polyQ gene in different regions with different thresholds
 #roworder <- c("ATN1", "CACNA1A", "HTT", "AR", "ATXN2", "ATXN1", "ATXN3", "ATXN7", "TBP", "Total")
-colorder <- c("brain", "frontal_lobe", "striatum", "hypothalamus", "mesencephalon", "cerebellar_cortex", "pons")
+colorder <- c("brain", "frontal_lobe", "parietal_lobe", "striatum", "hypothalamus", "mesencephalon", "cerebellar_cortex", "pons")
 
 #Sort and plot table
 pdf(file = "regionLs_threshold.pdf", 8, 9)
@@ -106,11 +105,11 @@ lapply(c(5:8), function(x){
   file <- paste("C:/Users/dkeo/surfdrive/polyQ_coexpression/resources/genesets_threshold0", x, "0.RData", sep = "")
   attach(file)
   table <- sapply(regionLs, function(x){sapply(x, length)})
+  detach(2)
   rownames(table) <- sapply(rownames(table), entrezId2Name)
   Total <- apply(table, 2, sum)
   table <- rbind(table, Total)
   table <- table[ , colorder]
-  detach(2)
   labeledHeatmap(replace(table, which(table == 1), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
                  yLabels = c(make.italic(rownames(table)[-10]), rownames(table)[10]), colors = blueWhiteRed(200)[100:200], 
                  main = paste("Genes correlated >0.", x, " for each polyQ gene in different regions", sep = ""), 

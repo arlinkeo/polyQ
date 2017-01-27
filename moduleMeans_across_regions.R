@@ -4,11 +4,9 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 load("resources/polyQ.RData")
-# remove brain regions wit low number of samples
-structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ]
 
 ###Cytoscape circular plots###
-# load("whole_brain/moduleMeans.RData")
+# load("parietal_lobe/moduleMeans.RData")
 # structName <- "WB"
 # cyt <- exportNetworkToCytoscape(moduleMeans, nodeFile = paste("moduleMeansNodes_", structName,".txt", sep = ""), 
 #                                 edgeFile = paste("moduleMeansEdges_", structName,".txt", sep = ""), threshold = 0.0, nodeAttr = pQcolors)

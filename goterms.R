@@ -7,7 +7,6 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ] # remove structures from list
 structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
@@ -27,6 +26,7 @@ bg
 
 # Obtain a list of GO terms for each gene set
 t <- 0.05 # EASE p-value threshold
+setTimeOut(david, 150000)
 regions <- names(regionLs)
 names(regions) <- regions
 info <- lapply(regions, function(r){

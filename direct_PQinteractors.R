@@ -2,7 +2,7 @@
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
-allowWGCNAThreads(nThreads = 32)
+#allowWGCNAThreads(nThreads = 32)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
@@ -20,13 +20,26 @@ regionLs <- c(regionLs, HD_region = list(selection))
 genepairs <- t(combn(polyQgenes, 2))
 rownames(genepairs) <- apply(genepairs, 1, function(x) {paste(x[1], "-", x[2], sep = "") })
 
-
+#Reduce gene sets to polyQ genes only
 reduce2pq <- function(r){lapply(r, function(x){intersect(x, pQEntrezIDs)})}
 pqInteractors <- lapply(regionLs, reduce2pq)
 pqInteractors <- lapply(pqInteractors, function(r){r[which(lengths(r) != 1)]}) # remove vectors of size 1
-pqInteractors <- pqInteractors[which(lengths(pqInteractors) != 0)] # remove empty lists
-pqInteractors <- lapply(pqInteractors, function(r){unique(unlist(r))})
-pqInteractors <- lapply(pqInteractors, function(r){lapply(r, entrezId2Name)})
+pqInteractors <- pqInteractors[which(lengths(pqInteractors) != 0)] # remove empty lists (regions)
+pqInteractors <- lapply(pqInteractors, function(x){names <- lapply(names(x), entrezId2Name); names(x) <- names; x})
+pqInteractors <- lapply(pqInteractors, function(x){lapply(x, function(y){sapply(y, entrezId2Name)})})
 
-lapply(pqInteractors, function(x){unlist(lapply(names(x), entrezId2Name))})
-pqInteractors <- 
+#Diagonal, binary matrix with 1 indicating 2 polyQ genes are neighbours (directly co-express >0.5) 
+names(polyQgenes) <- polyQgenes
+matrixList <- lapply(pqInteractors, function(r){
+  sapply(polyQgenes, function(pq1){
+    interacters <- names(r)
+    row <- sapply(polyQgenes, function(pq2){
+      if (is.element(pq1, interacters)) {
+        if (is.element(pq2, r[[pq1]][-1])) 1 else 0
+      } 
+      else 0
+    })
+    row
+  })
+})
+

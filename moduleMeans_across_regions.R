@@ -29,7 +29,7 @@ mm_list <- lapply(regionLs, function(x) {
 pQpairs <- t(combn(polyQgenes, 2))
 rowpairs <- apply(pQpairs, 1, function(x){paste( x[1], "-", x[2], sep = "")})
 rsVar <- apply(simplify2array(mm_list), 1:2, var)
-# cyt <- exportNetworkToCytoscape(rsVar, edgeFile = "moduleMeansEdges_variance2.txt", threshold = 0.0)
+cyt <- exportNetworkToCytoscape(rsVar, edgeFile = "regional_variance/moduleMeansEdges_variance3.txt", threshold = 0.0)
 regional_variance <- apply(pQpairs, 1, function(x){rsVar[x[1], x[2]]})
 regions <- apply(pQpairs, 1, function(x){
   gene1 <- x[1]

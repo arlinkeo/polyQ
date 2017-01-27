@@ -4,21 +4,13 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 load("resources/polyQ.RData")
+ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 
 ###Cytoscape circular plots###
-# load("parietal_lobe/moduleMeans.RData")
-# structName <- "WB"
-# cyt <- exportNetworkToCytoscape(moduleMeans, nodeFile = paste("moduleMeansNodes_", structName,".txt", sep = ""), 
-#                                 edgeFile = paste("moduleMeansEdges_", structName,".txt", sep = ""), threshold = 0.0, nodeAttr = pQcolors)
-# 
-# #Export module means for each region to Cytoscape
-# apply(structureIDs, 1, function (x) {
-#   wd <- paste("C:/Users/dkeo/Documents/Human-brain-project/polyQgenes/region_specific/", gsub(" ", "_", x[3]), sep = "")
-#   setwd(wd)
-#   filename <- paste("moduleMeans_", x[2],".RData", sep = "")
-#   load(filename)
-#   cyt <- exportNetworkToCytoscape(moduleMeans, edgeFile = paste("moduleMeansEdges_", x[2],".txt", sep = ""), threshold = 0.0, nodeAttr = pQcolors)
-# })
+id <- ontology[ontology$name %in% "parietal lobe", ][ , c(1:3)]
+load(paste("regional_coexpression/", gsub(" ", "_", id[3]), "/moduleMeans_", id[2], ".RData", sep = ""))
+cyt <- exportNetworkToCytoscape(moduleMeans, threshold = 0.0, nodeAttr = pQcolors, 
+          edgeFile = paste("regional_coexpression/", gsub(" ", "_", id[3]), "/moduleMeansEdges_", structName,".txt", sep = ""))
 
 #########################################
 #Variance of edges

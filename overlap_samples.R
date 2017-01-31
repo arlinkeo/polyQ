@@ -18,11 +18,6 @@ sampleIDs_HD <- lapply(donorNames, function(d){
   networkB <- networkInfo[, "network_B"]
   networkD <- networkInfo[, "network_D"]
   bitwOr(networkB, networkD)
-  # networkBSamples <- which(networkInfo[, "network_B"] == 1)
-  # networkDSamples <- which(networkInfo[, "network_D"] == 1)
-  # combinedSamples <- sort(unique(c(networkBSamples, networkDSamples))) # row/col numbers to select
-  # print(paste(d, ": ", length(combinedSamples), " samples", sep = ""))
-  # combinedSamples
 })
 
 #Select anatomic region-specific samples

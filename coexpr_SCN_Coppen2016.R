@@ -15,31 +15,26 @@ load("../polyQ.RData")
 probeInfo <- read.csv("../../../sjoerdhuisman/ABA_human_brain_probegene/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]}
 
-#Select region-specific samples
-sample_ids <- lapply(donorNames, function(d){
+#Select region-specific samples and calculate co-expression
+brainCorList <- lapply(donorNames, function(d){
   networkInfo <- read.csv(paste("samples_in_networks_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
-  networkBSamples <- networkInfo[which(networkInfo[, "network_B"] == 1), "sample_id"]
-  networkDSamples <- networkInfo[which(networkInfo[, "network_D"] == 1), "sample_id"]
-  combinedSamples <- as.character(unique(c(networkBSamples, networkDSamples)))
-})
-lapply(sample_ids, length)
-
-brainCorList <- lapply(donorNames, function(d) {
-  samples <- sample_ids[[d]]
+  networkBSamples <- which(networkInfo[, "network_B"] == 1)
+  networkDSamples <- which(networkInfo[, "network_D"] == 1)
+  combinedSamples <- sort(unique(c(networkBSamples, networkDSamples))) # row/col numbers to select
+  print(paste(d, ": ", length(combinedSamples), " samples", sep = ""))
   expr <- brainExpr[[d]]
-  cols <- colnames(expr) %in% samplesprint(paste("Selected samples: ", length(which(cols))))
-  corMat <- cor(t(expr[ , cols]))
+  corMat <- cor(t(expr[ , combinedSamples]))
   diag(corMat) <- 0
   corMat
 })
-save(brainCorList, file = paste("brainCorList_HDnetworkBD.RData", sep = ""))
+save(brainCorList, file = paste("brainCorList_HDnetworkBD2.RData", sep = ""))
 remove(brainExpr)
 print("Correlation per brain saved")
-load("../brainCorList_HDnetworkBD.RData")
+#load("brainCorList_HDnetworkBD2.RData")
 names(brainCorList) <- NULL
 
 meanCor <- apply(simplify2array(brainCorList), 1:2, mean)
-save(meanCor, file = "meanCor_HDnetworkBD.RData")
+save(meanCor, file = "meanCor_HDnetworkBD2 .RData")
 print("Mean corr. accross brains saved")
 
 print("Finished")

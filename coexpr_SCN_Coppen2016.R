@@ -37,4 +37,15 @@ meanCor <- apply(simplify2array(brainCorList), 1:2, mean)
 save(meanCor, file = "meanCor_HDnetworkBD2 .RData")
 print("Mean corr. accross brains saved")
 
+load("../HD_masks_Coppen2016/meanCor_HDnetworkBD.RData")
+top25id <- apply(meanCor[pQEntrezIDs, ], 1, function(x) {names(head(-sort(-x), 25))})
+top25id <- rbind(colnames(top25id), top25id)
+top25sym <- apply(top25id,c(1,2), entrezId2Name)
+geneSet <- as.vector(top25id) # May contain duplicates
+subsetCor <- meanCor[geneSet, geneSet]
+geneSetSym <- sapply(geneSet, entrezId2Name)
+rownames(subsetCor) <- geneSetSym
+colnames(subsetCor) <- geneSetSym
+save(subsetCor, file = "subsetCor_HDregion.RData")
+
 print("Finished")

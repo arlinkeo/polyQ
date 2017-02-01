@@ -24,6 +24,8 @@ mm_list <- lapply(regionLs, function(x) {
   detach(2)
   mm
 })
+load("HD_masks_Coppen2016/moduleMeans_HDregion.RData")
+mm_list <- c(mm_list, list(HD_region = moduleMeans))
 
 #Table with regional variance based on corr. values
 pQpairs <- t(combn(polyQgenes, 2))

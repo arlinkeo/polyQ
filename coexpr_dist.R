@@ -20,6 +20,9 @@ coexpr_dist <- lapply(structures, function(r){
   detach(2)
   mat
 })
+load("HD_masks_Coppen2016/meanCor_HDnetworkBD.RData")
+mat_HD <- meanCor[pQEntrezIDs, ]
+coexpr_dist <- c(coexpr_dist, list(HD_region = mat_HD))
 save(coexpr_dist, file = "resources/coexpr_dist.RData")
 load("resources/coexpr_dist.RData")
 
@@ -27,7 +30,7 @@ load("resources/coexpr_dist.RData")
 pdf(file = "coexpr_dist.pdf", 16, 12)
 #par(mfcol=c(9,7), oma = c(5,5,6,0), mai = c(0.2,0.2,0.5,0.2))
 par(oma = c(8,8,12,2), mai = c(0.2,0.2,0.5,0.2))
-layout(matrix(c(1:81), 9, 9), widths = c(2, rep(3, 8)), heights = rep(1, 9))
+layout(matrix(c(1:90), 9, 10), widths = c(2, rep(3, 9)), heights = rep(1, 9))
 lapply(polyQgenes, function(pq){
   plot(0, type = "n", axes=F, xlab="", ylab="")
   mtext(make.italic(pq), 3, line = 0)

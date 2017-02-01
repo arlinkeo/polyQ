@@ -2,7 +2,6 @@
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
-#allowWGCNAThreads(nThreads = 32)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions

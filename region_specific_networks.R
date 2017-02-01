@@ -4,9 +4,9 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 load("../resources/polyQ.RData")
-#ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-#id <- ontology[ontology$name %in% "parietal lobe", ][ , c(1:3)]
-id <- c(0, "HDregion", "../HD_masks_Coppen2016")
+ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
+id <- ontology[ontology$name %in% "brain", ][ , c(1:3)]
+#id <- c(0, "HDregion", "../HD_masks_Coppen2016")
 load(paste(gsub(" ", "_", id[3]), "/subsetCor_", id[2], ".RData", sep = ""))
 
 #Heatmap of modules averaged

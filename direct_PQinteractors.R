@@ -29,7 +29,7 @@ pqInteractors <- lapply(pqInteractors, function(x){lapply(x, function(y){sapply(
 
 #Diagonal, binary matrix with 1 indicating 2 polyQ genes are neighbours (directly co-express >0.5) 
 names(polyQgenes) <- polyQgenes
-matrixList <- lapply(pqInteractors, function(r){
+pqNeighbors <- lapply(pqInteractors, function(r){
   sapply(polyQgenes, function(pq1){
     interacters <- names(r)
     row <- sapply(polyQgenes, function(pq2){
@@ -41,6 +41,7 @@ matrixList <- lapply(pqInteractors, function(r){
     row
   })
 })
+save(pqNeighbors, file = "resources/pqNeighbors.RData")
 
 #Save pdf of matrices
 pdf(file = "polyQ_neighbors_matrices.pdf", 8, 9)

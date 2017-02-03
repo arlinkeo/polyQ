@@ -10,6 +10,7 @@ probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
+setOverlap <- dget("polyQ_scripts/setOverlap.R")
 
 #Load asssociations info from literature
 associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
@@ -73,7 +74,9 @@ lapply(thresholds, function(t) {
   par(mar = c(6, 10, 15, 4))
   layout(matrix(c(1:2), 2, 1))
   # Count number of overlapping genes between two polyQ sets, combine with associations info
-  table1 <- sapply(geneSets[[t]], overlap)
+  table1 <- sapply(geneSets[[t]], function(s){sapply(setOverlap(s), length)})
+  rownames(table1) <- sapply(rownames(table1), function(n){paste(sapply(unlist(strsplit(n, "-")), entrezId2Name), collapse = "-")}) 
+  table1 <- table1[order, ]
   table1 <- cbind(table1, associations)
   par(mai = c(0.5, 2, 3, 0.5))
   labeledHeatmap(as.matrix((table1 > 0) + 0), xLabels = colnames(table1), yLabels = make.italic(rownames(table1)),
@@ -117,7 +120,9 @@ lapply(thresholds, function(t) {
   par(mar = c(6, 10, 15, 4))
   layout(matrix(c(1:2), 2, 1))
   # Count number of overlapping genes between two polyQ sets, combine with associations info
-  table1 <- sapply(geneSets[[t]], overlap)
+  table1 <- sapply(geneSets[[t]], function(s){sapply(setOverlap(s), length)})
+  rownames(table1) <- sapply(rownames(table1), function(n){paste(sapply(unlist(strsplit(n, "-")), entrezId2Name), collapse = "-")}) 
+  table1 <- table1[order, ]
   table1 <- cbind(table1, associations)
   par(mai = c(0.5, 2, 3, 0.5))
   labeledHeatmap(as.matrix((table1 > 0) + 0), xLabels = colnames(table1), yLabels = make.italic(rownames(table1)),
@@ -147,7 +152,9 @@ pdf(file = "overlap_genesets3.pdf", 21, 28)
 par(mar = c(6, 10, 15, 4))
 layout(matrix(c(1:2), 2, 1))
 # Count number of overlapping genes between two polyQ sets, combine with associations info
-table1 <- sapply(regionLs, overlap)
+table1 <- sapply(regionLs, function(s){sapply(setOverlap(s), length)})
+rownames(table1) <- sapply(rownames(table1), function(n){paste(sapply(unlist(strsplit(n, "-")), entrezId2Name), collapse = "-")}) 
+table1 <- table1[order, ]
 table1 <- cbind(table1, associations)
 par(mai = c(0.5, 2, 3, 0.5))
 labeledHeatmap(as.matrix((table1 > 0) + 0), xLabels = colnames(table1), yLabels = make.italic(rownames(table1)),

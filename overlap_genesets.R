@@ -26,19 +26,6 @@ not_SCA_and_HD <- c(which(associations$SCA_or_HD == 0), which(is.na(associations
 order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
 associations <- associations[order, ]
 
-# prepare gene pair matrix from rownames(associations) with entrezIds
-genepairs <- t(sapply(rownames(associations), function(x){as.character(sapply(unlist(strsplit(x, "-")), name2entrezId))}))
-
-# Function to count number of overlapping genes between two polyQ sets per region
-overlap <- function(x) {
-  apply(genepairs, 1, function(y){
-    geneset1 <- x[[y[1]]]
-    geneset2 <- x[[y[2]]]
-    genes <- intersect(geneset1, geneset2)
-    length(genes)
-  })
-}
-
 # Function to get significance of overlap using hypergeometric test.
 hyper.test <- function(x) {
   apply(genepairs, 1, function(y){

@@ -1,7 +1,7 @@
 # Number samples of atomic structures that fall within the HD associated regions (Coppen2016)
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-#library(WGCNA)
+library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
@@ -78,4 +78,6 @@ apply(structureIDs, 1, function(id){
                                   edgeFile = paste("regional_coexpression/", structure, "/pqNeighborsEdges_",structName,".txt", sep = ""), 
                                 nodeFile = paste("regional_coexpression/", structure, "/pqExprNodes_", structName,".txt", sep = ""))
 })
-
+cyt <- exportNetworkToCytoscape(pqNeighbors[["HD_region"]], threshold = -1, nodeAttr = avgExpr[, "HD_region"], 
+                                edgeFile = "HD_masks_Coppen2016/pqNeighborsEdges_HDregion.txt", 
+                                nodeFile = "HD_masks_Coppen2016/pqExprNodes_HDregion.txt")

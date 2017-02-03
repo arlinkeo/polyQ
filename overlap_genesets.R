@@ -67,7 +67,7 @@ geneSets <- lapply(thresholds, function(t) {
   gs
 })
 
-# Plot number of overlapping genes and its significance
+# Plot number of overlapping genes and its significance for different thresholds
 pdf(file = "overlap_genesets.pdf", 21, 28)
 lapply(thresholds, function(t) {
   par(mar = c(6, 10, 15, 4))
@@ -92,7 +92,8 @@ lapply(thresholds, function(t) {
 })
 dev.off()
 
-##### Only include associations based on interaction between causative and non-causative gene###
+##### Only include associations based on interaction between causative and non-causative gene #####
+
 associations["CACNA1A−HTT", "HD_AAO"] <- 0
 associations["ATN1−HTT", "HD_BMI"] <- 0
 associations["ATN1−HTT", "HD_motor"] <- 0
@@ -135,12 +136,13 @@ lapply(thresholds, function(t) {
 })
 dev.off()
 
-##### Add coexpression analysis of HD regions, only for gene sets with threshold > 0.5 ########
+##### Add coexpression analysis of HD regions ########
+
 load("resources/genesets_threshold050.RData")
 load("resources/genesets_threshold050_HDregion.RData")
 regionLs <- c(regionLs, HD_region = list(selection)) # Add gene sets from HD region to list of brain structures
 
-# Plot number of overlapping genes and its significance
+# Plot number of overlapping genes and its significance for gene sets with threshold > 0.5
 pdf(file = "overlap_genesets3.pdf", 21, 28)
 par(mar = c(6, 10, 15, 4))
 layout(matrix(c(1:2), 2, 1))

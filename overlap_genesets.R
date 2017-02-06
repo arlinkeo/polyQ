@@ -6,6 +6,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
+structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
@@ -26,26 +27,6 @@ only_HD <- only_HD[order(associations[only_HD, ]$SCA_total)]
 not_SCA_and_HD <- c(which(associations$SCA_or_HD == 0), which(is.na(associations$SCA_or_HD)))
 order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
 associations <- associations[order, ]
-
-# Function to get significance of overlap using hypergeometric test.
-# hyper.test <- function(x) {
-#   setNames <- t(combn(names(x), 2))
-#   rownames(setNames) <- apply(setNames, 1, function(n){paste(n[1], n[2], sep = "-")})
-#   
-#   apply(setNames, 1, function(y){
-#     geneset1 <- x[[y[1]]]
-#     geneset2 <- x[[y[2]]]
-#     overlap <- length(intersect(geneset1, geneset2))
-#     ngs1 <- length(geneset1)
-#     ngs2 <- length(geneset2)
-#     totalGenes <- 19992
-#     if (overlap != 0){
-#     print(paste(cat(y, sep = "-"), 
-#                 ": phyper(", overlap, " - 1, ", ngs1, ", ", totalGenes, " - ", ngs1, ", ", ngs2, ", lower.tail = FALSE)", sep = ""))
-#     }
-#     phyper(overlap - 1, ngs1, totalGenes - ngs1, ngs2, lower.tail = FALSE)
-#   })
-# }
 
 ####### For different thresholds ##########
 thresholds <- c("50" = "50", "60" = "60", "70" = "70", "80" = "80")
@@ -137,27 +118,19 @@ dev.off()
 load("resources/genesets_threshold050.RData")
 load("resources/genesets_threshold050_HDregion.RData")
 regionLs <- c(regionLs, HD_region = list(selection)) # Add gene sets from HD region to list of brain structures
-pqOrder <- polyQgenes[c(4, 3, 7, 6, 2, 1, 5, 8, 9)]
-names(pqOrder) <- pqOrder # HTT first
+# pqOrder <- polyQgenes[c(4, 3, 7, 6, 2, 1, 5, 8, 9)]
+# names(pqOrder) <- pqOrder # HTT first
 regionLs <- lapply(regionLs, function(s){
   names(s) <- sapply(names(s), entrezId2Name)# pQ genes to entrezID
-  s <- sapply(pqOrder, function(pq){
-    s[[pq]]
-  })
+  # s <- sapply(pqOrder, function(pq){
+  #   s[[pq]]
+  # })
   s
 })
 
 matLs1 <- lapply(regionLs, setOverlap)
+matLs1 <- lapply(matLs1, function(m){apply(m, c(1,2), log1p)}) # natural log(1+x) of sizes
 matLs2 <- lapply(regionLs, setOverlapSignif)
-
-#Export to cytoscape
-apply(simplify2array(list(table1, table2)), 1:2, function(x){
-  size <- x[1]
-  pVal <- x[2]
-  if (pVal < 0.05){
-    print(paste("size  & pval = ", size, " & ", pVal, sep =""))
-  }
-})
 
 as.table <- function(matLs){
   sapply(matLs, function(m){
@@ -166,11 +139,33 @@ as.table <- function(matLs){
     apply(pairs, 1, function(x){m[x[1], x[2]]})
   })
 }
-
 table1 <- as.table(matLs1)
 table2 <- as.table(matLs2)
 
+#Export to cytoscape
+export.cyt <- function(m1, m2, edgeFile = ""){
+  pairs <- t(combn(rownames(m1), 2))
+  colnames(pairs) <- c("fromNode", "toNode")
+  weight <- apply(pairs, 1, function(x){m1[x[1], x[2]]})
+  pVal <- apply(pairs, 1, function(x){m2[x[1], x[2]]})
+  direction <- rep("undirected", dim(pairs)[1])
+  table <- cbind(pairs, weight, pVal, direction)
+  colnames(table) <- c(colnames(pairs), "log(1+size)", "p-value", "direction")
+  write.table(table, file = edgeFile, sep = "\t", row.names = FALSE, quote = FALSE)
+}
+
+apply(structureIDs, 1, function(id){
+  id <- unlist(id)
+  structName <- id[2]
+  structure <- id[3]
+  fName <- paste("regional_coexpression/", structure, "/pqGeneOverlapEdges_",structName,".txt", sep = "")
+  export.cyt(matLs1[[structure]], matLs2[[structure]], edgeFile = fName)
+})
+cyt <- export.cyt(matLs1[["HD_region"]], matLs2[["HD_region"]], edgeFile = "HD_masks_Coppen2016/pqGeneOverlapEdges_HDregion.txt")
+
 # Plot number of overlapping genes and its significance for gene sets with threshold > 0.5
+
+
 pdf(file = "overlap_genesets3.pdf", 21, 28)
 par(mar = c(6, 10, 15, 4))
 layout(matrix(c(1:2), 2, 1))

@@ -73,7 +73,7 @@ colnames(avgExprColor) <- colnames(avgExpr)
 
 load("resources/pqNeighbors.RData")
 
-# save node and edge file for each structure
+# Plot pqNeighbors in Cytoscape for each structure
 pqPairs <- t(combn(polyQgenes, 2))
 apply(structureIDs, 1, function(id){
   id <- unlist(id)

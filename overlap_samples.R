@@ -57,6 +57,7 @@ avgExprColor <- matrix(pal(100)[as.numeric(cut(avgExpr, breaks = 100))], 9, 9)
 rownames(avgExprColor) <- rownames(avgExpr)
 colnames(avgExprColor) <- colnames(avgExpr)
 
+# Load info about direct interacters (direct_PQinteracter.R)
 load("resources/pqNeighbors.RData")
 
 # Plot pqNeighbors in Cytoscape for each structure

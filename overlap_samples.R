@@ -2,6 +2,7 @@
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
+library(RCy3)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
@@ -9,22 +10,23 @@ load("resources/BrainExpr.RData")
 ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 load("resources/polyQ.RData")
 structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
+structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 rownames(structureIDs) <- structureIDs$name
 donorNames <- names(brainExpr)
 names(donorNames) <- donorNames
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 
+##### Obtain binary vectors indicating presence of sample across regions and donors #####
 #Select HD region-specific samples
 sampleIDs_HD <- lapply(donorNames, function(d){
-  networkInfo <- read.csv(paste("HD_masks_Coppen2016/samples_in_networks_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
+  networkInfo <- read.csv(paste("regional_coexpression/HD_region/samples_in_networks_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
   networkB <- networkInfo[, "network_B"]
   networkD <- networkInfo[, "network_D"]
   bitwOr(networkB, networkD)
 })
-
 #Select anatomic region-specific samples
-sampleIDs <- apply(structureIDs, 1, function(id){
+sampleIDs <- apply(structureIDs[-9, ], 1, function(id){
   print(id)
   structName <- id[2]
   ontologyRows <- grep(id[1], ontology$structure_id_path)
@@ -37,24 +39,8 @@ sampleIDs <- apply(structureIDs, 1, function(id){
     as.numeric(cols)
   })
 })
-
+#Combine info
 sampleIDs <- c(sampleIDs, HD_region = list(sampleIDs_HD))
-
-# Number of samples in atomic structures and HD regions
-# overlap <- sapply(sampleIDs, function(s){
-#   sapply(donorNames, function(d){
-#     samples <- bitwAnd(s[[d]], sampleIDs_HD[[d]])
-#     #paste(length(which(samples == 1)), "/", length(which(s[[d]] == 1)), sep = "")
-#     #length(which(samples == 1)) / length(which(s[[d]] == 1)) * 100
-#     #length(which(samples == 1)) / length(which(sampleIDs_HD[[d]] == 1)) * 100
-#     length(which(samples == 1))
-#   })
-# })
-
-# # Number of samples in structure
-# sampleSize <- sapply(sampleIDs, function(s){
-#   length(which(unlist(s) == 1))
-# })
 
 # Average expression of a polyQ gene in a structure across donors and samples.
 avgExpr <- sapply(sampleIDs, function(s){
@@ -106,13 +92,4 @@ apply(structureIDs, 1, function(id){
   deleteSelectedEdges(cw)
   svgName <- paste("regional_coexpression/", structure, "/", windowName, ".svg", sep = "")
   saveImage(cw, svgName, "svg")
-  # cyt <- exportNetworkToCytoscape(pqNeighbors[[structure]], threshold = -1, nodeAttr = attr, 
-  #                                 edgeFile = paste("regional_coexpression/", structure, "/pqNeighborsEdges_",structName,".txt", sep = ""), 
-  #                               nodeFile = paste("regional_coexpression/", structure, "/pqExprNodes_", structName,".txt", sep = ""))
 })
-
-attr <- cbind(avgExpr[, "HD_region"], avgExprColor[, "HD_region"])
-colnames(attr) <- c("expr", "exprColor")
-cyt <- exportNetworkToCytoscape(pqNeighbors[["HD_region"]], threshold = -1, nodeAttr = attr, 
-                                edgeFile = "HD_masks_Coppen2016/pqNeighborsEdges_HDregion.txt", 
-                                nodeFile = "HD_masks_Coppen2016/pqExprNodes_HDregion.txt")

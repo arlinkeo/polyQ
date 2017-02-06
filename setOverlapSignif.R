@@ -11,7 +11,7 @@ setOverlapSignif <- function(x, total = 19992) {
       ns1 <- length(set1)
       ns2 <- length(set2)
       if (overlap != 0){
-        print(paste(cat(y, sep = "-"), 
+        print(paste(cat(pq1, pq2, sep = "-"), 
                     ": phyper(", overlap, " - 1, ", ns1, ", ", total, " - ", ns1, ", ", ns2, ", lower.tail = FALSE)", sep = ""))
       }
       pVal <- phyper(overlap - 1, ns1, total - ns1, ns2, lower.tail = FALSE)

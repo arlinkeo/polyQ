@@ -84,7 +84,7 @@ genepairs <- t(sapply(rownames(associations), function(x){as.character(unlist(st
 pdf(file = "polyQ_neighbors_table.pdf", 21, 14)
 par(mar = c(6, 10, 15, 4))
 par(mai = c(0.5, 2, 3, 0.5))
-  labeledHeatmap(table, xLabels = colnames(table), yLabels = make.italic(rownames(table)),
+labeledHeatmap(table, xLabels = colnames(table), yLabels = make.italic(rownames(table)),
                setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
                textMatrix = table, main = "PolyQ neighbours co-expressed >0.5")
 

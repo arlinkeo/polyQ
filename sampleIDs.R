@@ -35,4 +35,4 @@ sampleIDs <- apply(structureIDs[-9, ], 1, function(id){
 })
 #Combine info
 sampleIDs <- c(sampleIDs, HD_region = list(sampleIDs_HD))
-save(sampleIDs, file = "sampleIDs.RData")
+save(sampleIDs, file = "resources/sampleIDs.RData")

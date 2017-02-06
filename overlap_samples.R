@@ -5,13 +5,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/sampleIDs.RData")
-#ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 load("resources/polyQ.RData")
-# structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
-# structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
-# rownames(structureIDs) <- structureIDs$name
-# probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-# entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 
 # Number of samples in atomic structures and HD regions
 donorNames <- names(sampleIDs[[1]])

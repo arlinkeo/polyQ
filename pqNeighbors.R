@@ -25,13 +25,9 @@ rownames(genepairs) <- apply(genepairs, 1, function(x) {paste(x[1], "-", x[2], s
 reduce2pq <- function(r){lapply(r, function(x){intersect(x, pQEntrezIDs)})}
 pqInteractors <- lapply(regionLs, reduce2pq)
 pqInteractors <- lapply(pqInteractors, function(r){r[which(lengths(r) != 1)]}) # remove vectors of size 1
-# pqInteractors <- pqInteractors[which(lengths(pqInteractors) != 0)] # remove empty lists (regions)
-# pqInteractors <- lapply(pqInteractors, function(x){names <- lapply(names(x), entrezId2Name); names(x) <- names; x})
-# pqInteractors <- lapply(pqInteractors, function(x){lapply(x, function(y){sapply(y, entrezId2Name)})})
 
 #Diagonal, binary matrix with 1 indicating 2 polyQ genes are neighbours (directly co-express >0.5) 
 names(pQEntrezIDs) <- pQEntrezIDs
-# names(polyQgenes) <- polyQgenes
 pqNeighbors <- lapply(pqInteractors, function(r){
   sapply(pQEntrezIDs, function(pq1){
     interacters <- names(r)
@@ -44,7 +40,6 @@ pqNeighbors <- lapply(pqInteractors, function(r){
     row
   })
 })
-
 pqNeighbors <- lapply(pqNeighbors, function(m){
   rownames(m) <- lapply(rownames(m), entrezId2Name)
   colnames(m) <- lapply(colnames(m), entrezId2Name)

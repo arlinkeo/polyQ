@@ -118,19 +118,15 @@ dev.off()
 load("resources/genesets_threshold050.RData")
 load("resources/genesets_threshold050_HDregion.RData")
 regionLs <- c(regionLs, HD_region = list(selection)) # Add gene sets from HD region to list of brain structures
-# pqOrder <- polyQgenes[c(4, 3, 7, 6, 2, 1, 5, 8, 9)]
-# names(pqOrder) <- pqOrder # HTT first
 regionLs <- lapply(regionLs, function(s){
   names(s) <- sapply(names(s), entrezId2Name)# pQ genes to entrezID
-  # s <- sapply(pqOrder, function(pq){
-  #   s[[pq]]
-  # })
   s
 })
 
-matLs1 <- lapply(regionLs, setOverlap)
-matLs1 <- lapply(matLs1, function(m){apply(m, c(1,2), log1p)}) # natural log(1+x) of sizes
-matLs2 <- lapply(regionLs, setOverlapSignif)
+geneSetOverlap <- lapply(regionLs, setOverlap)
+geneSetOverlapSignif <- lapply(regionLs, setOverlapSignif)
+save(geneSetOverlap, file = "resources/geneSetOverlap.RData")
+save(geneSetOverlapSignif, file = "resources/geneSetOverlapSignif.RData")
 
 as.table <- function(matLs){
   sapply(matLs, function(m){
@@ -139,20 +135,8 @@ as.table <- function(matLs){
     apply(pairs, 1, function(x){m[x[1], x[2]]})
   })
 }
-table1 <- as.table(matLs1)
-table2 <- as.table(matLs2)
-
-#Export to cytoscape
-export.cyt <- function(m1, m2, edgeFile = ""){
-  pairs <- t(combn(rownames(m1), 2))
-  colnames(pairs) <- c("fromNode", "toNode")
-  weight <- apply(pairs, 1, function(x){m1[x[1], x[2]]})
-  pVal <- apply(pairs, 1, function(x){m2[x[1], x[2]]})
-  direction <- rep("undirected", dim(pairs)[1])
-  table <- cbind(pairs, weight, pVal, direction)
-  colnames(table) <- c(colnames(pairs), "log(1+size)", "p-value", "direction")
-  write.table(table, file = edgeFile, sep = "\t", row.names = FALSE, quote = FALSE)
-}
+table1 <- as.table(geneSetOverlap)
+table2 <- as.table(geneSetOverlapSignif)
 
 apply(structureIDs, 1, function(id){
   id <- unlist(id)
@@ -164,8 +148,6 @@ apply(structureIDs, 1, function(id){
 cyt <- export.cyt(matLs1[["HD_region"]], matLs2[["HD_region"]], edgeFile = "HD_masks_Coppen2016/pqGeneOverlapEdges_HDregion.txt")
 
 # Plot number of overlapping genes and its significance for gene sets with threshold > 0.5
-
-
 pdf(file = "overlap_genesets3.pdf", 21, 28)
 par(mar = c(6, 10, 15, 4))
 layout(matrix(c(1:2), 2, 1))

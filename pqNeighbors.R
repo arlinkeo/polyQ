@@ -6,6 +6,8 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
+structureIDs[ , 3] <- gsub(" ", "_", structureIDs[ , 3])
+structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
@@ -24,15 +26,16 @@ reduce2pq <- function(r){lapply(r, function(x){intersect(x, pQEntrezIDs)})}
 pqInteractors <- lapply(regionLs, reduce2pq)
 pqInteractors <- lapply(pqInteractors, function(r){r[which(lengths(r) != 1)]}) # remove vectors of size 1
 # pqInteractors <- pqInteractors[which(lengths(pqInteractors) != 0)] # remove empty lists (regions)
-pqInteractors <- lapply(pqInteractors, function(x){names <- lapply(names(x), entrezId2Name); names(x) <- names; x})
-pqInteractors <- lapply(pqInteractors, function(x){lapply(x, function(y){sapply(y, entrezId2Name)})})
+# pqInteractors <- lapply(pqInteractors, function(x){names <- lapply(names(x), entrezId2Name); names(x) <- names; x})
+# pqInteractors <- lapply(pqInteractors, function(x){lapply(x, function(y){sapply(y, entrezId2Name)})})
 
 #Diagonal, binary matrix with 1 indicating 2 polyQ genes are neighbours (directly co-express >0.5) 
-names(polyQgenes) <- polyQgenes
+names(pQEntrezIDs) <- pQEntrezIDs
+# names(polyQgenes) <- polyQgenes
 pqNeighbors <- lapply(pqInteractors, function(r){
-  sapply(polyQgenes, function(pq1){
+  sapply(pQEntrezIDs, function(pq1){
     interacters <- names(r)
-    row <- sapply(polyQgenes, function(pq2){
+    row <- sapply(pQEntrezIDs, function(pq2){
       if (is.element(pq1, interacters)) {
         if (is.element(pq2, r[[pq1]][-1])) 1 else 0
       } 
@@ -40,6 +43,12 @@ pqNeighbors <- lapply(pqInteractors, function(r){
     })
     row
   })
+})
+
+pqNeighbors <- lapply(pqNeighbors, function(m){
+  rownames(m) <- lapply(rownames(m), entrezId2Name)
+  colnames(m) <- lapply(colnames(m), entrezId2Name)
+  m
 })
 save(pqNeighbors, file = "resources/pqNeighbors.RData")
 

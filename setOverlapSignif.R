@@ -20,5 +20,4 @@ setOverlapSignif <- function(x, total = 19992) {
   }
   diag(mat) <- 1
   mat
-  
 }

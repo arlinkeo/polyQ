@@ -27,13 +27,14 @@ cyt.visuals <- function(cw) {
 }
 
 # Load info about direct interacters (pqNeighbors.R)
-load("resources/pqNeighbors.RData")
+# load("resources/pqNeighbors.RData")
+load("resources/sc_list.RData")
 # Plot pqNeighbors in Cytoscape for each structure
 apply(structureIDs, 1, function(id){
   id <- unlist(id)
   structName <- id[2]
   structure <- id[3]
-  mat <- pqNeighbors[[structure]] # adjacency matrix
+  mat <- sc_list[[structure]] # adjacency matrix
   
   nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], exprColor = avgExprColor[, structure])
   edgeTable <- data.frame(fromNode = pqPairs[ , 1], toNode = pqPairs[ , 2], edgeType="interaction",
@@ -44,7 +45,7 @@ apply(structureIDs, 1, function(id){
   displayGraph (cw)
   cyt.visuals(cw)
   setNodeColorDirect(cw,  nodeTable[ , "nodeName"],  nodeTable[ , "exprColor"])
-  rowCol <- which(mat == 0, arr.ind = TRUE)
+  rowCol <- which(mat <= 0.5, arr.ind = TRUE)
   nonEdges <- apply(rowCol, 1, function(x){
     row <- x[1]
     col <- x[2]

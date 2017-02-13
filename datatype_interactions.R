@@ -40,19 +40,7 @@ mm_list <- lapply(regionLs, function(x) {
 mm <- sapply(mm_list, function(x){mat2vec(x)})
 mm <- as.data.frame(mm)
 
-### Load single correlations between polyQ genes ###
-# sc_list <- lapply(regionLs, function(x) {
-#   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
-#   print(f)
-#   attach(f)
-#   sc <- abs(meanCor[pQEntrezIDs, pQEntrezIDs])
-#   colnames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% colnames(sc), "gene_symbol"]
-#   rownames(sc) <- pQgeneInfo[pQgeneInfo$entrez_id %in% rownames(sc), "gene_symbol"]
-#   detach(2)
-#   sc
-# })
-# rm(regionLs)
-load("resources/polyQ_correlations.RData")
+load("resources/sc_list.RData")
 sc_list <- sc_list[!(names(sc_list) %in% c("CbN","BF","GP"))]
 sc <- sapply(sc_list, function(x){mat2vec(x)})
 sc <- as.data.frame(sc)

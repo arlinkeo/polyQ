@@ -26,6 +26,6 @@ sc_list <- lapply(structures, function(x) {
   detach(2)
   sc
 })
-save(sc_list, file = "resources/polyQ_correlations.RData")
+save(sc_list, file = "resources/sc_list.RData")
 
 sort(sapply(sc_list, function(x){x[7,3]}))

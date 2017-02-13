@@ -14,9 +14,6 @@ sampleIDs <- sampleIDs[-9]
 overlap <- sapply(sampleIDs, function(s){
   sapply(donorNames, function(d){
     samples <- bitwAnd(s[[d]], sampleIDs_HD[[d]])
-    #paste(length(which(samples == 1)), "/", length(which(s[[d]] == 1)), sep = "")
-    #length(which(samples == 1)) / length(which(s[[d]] == 1)) * 100
-    #length(which(samples == 1)) / length(which(sampleIDs_HD[[d]] == 1)) * 100
     length(which(samples == 1))
   })
 })

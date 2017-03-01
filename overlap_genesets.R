@@ -48,15 +48,16 @@ associations <- associations[order, ]
 # associations["HTT-ATXN2", "HD_cognition"] <- 0
 
 load("resources/genesets_threshold050.RData")
-regionLs <- lapply(regionLs, function(s){
-  names(s) <- sapply(names(s), entrezId2Name)# pQ genes to entrezID
-  s
-})
 
 geneSetOverlap <- lapply(regionLs, setOverlap)
 geneSetOverlapSignif <- sapply(regionLs, function(r){setOverlapSignif(r, total = 19992)})
 save(geneSetOverlap, file = "resources/geneSetOverlap.RData")
 save(geneSetOverlapSignif, file = "resources/geneSetOverlapSignif.RData")
+
+regionLs <- lapply(regionLs, function(s){
+  names(s) <- sapply(names(s), entrezId2Name)# pQ genes to entrezID
+  s
+})
 
 # Plot number of overlapping genes and its significance for gene sets with threshold > 0.5
 pdf(file = "overlap_geneSets.pdf", 21, 28)

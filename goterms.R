@@ -1,7 +1,5 @@
 # Get GO terms for gene sets per brain region
-
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-#library(WGCNA)
 library("RDAVIDWebService")
 options(stringsAsFactors = FALSE)
 

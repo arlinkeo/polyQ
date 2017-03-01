@@ -6,10 +6,13 @@ options(stringsAsFactors = FALSE)
 #Prepare data and functions
 load("resources/polyQ.RData")
 structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
+structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-load("resources/genesets_threshold050.RData")
 region.acronym <- function(x) {structureIDs[structureIDs$name %in% x, ]$acronym}
+load("resources/genesets_threshold050.RData")
+regions <- names(regionLs)
+names(regions) <- regions
 
 # Open connection to DAVID
 david<-DAVIDWebService$new(email="D.L.Keo@tudelft.nl", 
@@ -22,11 +25,10 @@ bg_list <- probeInfo$entrez_id
 bg <- addList(david, bg_list, idType = "ENTREZ_GENE_ID", listName = "AHBA background", listType = "Background")
 bg
 
-# Obtain a list of GO terms for each gene set
 t <- 0.05 # EASE p-value threshold
 setTimeOut(david, 150000)
-regions <- names(regionLs)
-names(regions) <- regions
+
+# Obtain a list of GO terms for each gene set
 info <- lapply(regions, function(r){
   lapply(regionLs[[r]], function(geneSet){
     if (length(geneSet) > 1){

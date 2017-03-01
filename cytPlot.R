@@ -9,6 +9,7 @@ structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 rownames(structureIDs) <- structureIDs$name
 pqPairs <- t(combn(polyQgenes, 2))
+rownames(pqPairs) <- apply(pqPairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
 
 # Node info
 load("resources/avgExpr.RData")
@@ -66,10 +67,11 @@ apply(structureIDs, 1, function(id){
 load("resources/geneSetOverlap.RData")
 load("resources/geneSetOverlapSignif.RData")
 # Plot for overlap of gene sets
-apply(structureIDs, 1, function(id){
+interaction_list <- apply(structureIDs, 1, function(id){
   id <- unlist(id)
   structName <- id[2]
   structure <- id[3]
+  print(structure)
   mat <- geneSetOverlap[[structure]] # adjacency matrix
   matLineWidth <- apply(mat, c(1,2), log1p)
   matSignif <- geneSetOverlapSignif[[structure]] # adjacency matrix
@@ -88,26 +90,26 @@ apply(structureIDs, 1, function(id){
   
   setEdgeLineWidthDirect(cw, apply(edgeTable, 1, function(x){paste(x[1], x[2], sep = " (overlap) ")}), edgeTable$overlapWidth)
   
-  rowCol <- which(matSignif >= 0.05, arr.ind = TRUE)
-  nonEdges <- apply(rowCol, 1, function(x){
-    row <- x[1]
-    col <- x[2]
-    paste(rownames(mat)[row], colnames(mat)[col], sep = " (overlap) ")
+  signif_idx <- which(edgeTable$overlapSignif < 0.05)
+  nonEdges <- edgeTable[-signif_idx, ]
+  nonEdges <- apply(nonEdges, 1, function(x){
+    paste(x["fromNode"], " (", x["edgeType"], ") ", x["toNode"], sep = "")
   })
   selectEdges(cw, nonEdges)
   deleteSelectedEdges(cw)
   
-  cysName <- paste("regional_coexpression/", structure, "/", windowName, ".cys", sep = "")
-  saveNetwork(cw, cysName, format = "cys")
-  svgName <- paste("regional_coexpression/", structure, "/", windowName, ".svg", sep = "")
-  saveImage(cw, svgName, "svg")
+  # cysName <- paste("regional_coexpression/", structure, "/", windowName, ".cys", sep = "")
+  # saveNetwork(cw, cysName, format = "cys")
+  # svgName <- paste("regional_coexpression/", structure, "/", windowName, ".svg", sep = "")
+  # saveImage(cw, svgName, "svg")
+  edgeTable[signif_idx, ]
 })
 
 # Term set overlap info
 load("resources/termSetOverlap.RData")
 load("resources/termSetOverlapSignif.RData")
 # Plot overlap
-apply(structureIDs, 1, function(id){
+interaction_list2 <- apply(structureIDs, 1, function(id){
   id <- unlist(id)
   structName <- id[2]
   structure <- id[3]
@@ -129,19 +131,19 @@ apply(structureIDs, 1, function(id){
   
   setEdgeLineWidthDirect(cw, apply(edgeTable, 1, function(x){paste(x[1], x[2], sep = " (overlap) ")}), edgeTable$overlapWidth)
   
-  rowCol <- which(matSignif >= 0.05, arr.ind = TRUE)
-  nonEdges <- apply(rowCol, 1, function(x){
-    row <- x[1]
-    col <- x[2]
-    paste(rownames(mat)[row], colnames(mat)[col], sep = " (overlap) ")
+  signif_idx <- which(edgeTable$overlapSignif < 0.05)
+  nonEdges <- edgeTable[-signif_idx, ]
+  nonEdges <- apply(nonEdges, 1, function(x){
+    paste(x["fromNode"], " (", x["edgeType"], ") ", x["toNode"], sep = "")
   })
   selectEdges(cw, nonEdges)
   deleteSelectedEdges(cw)
   
-  cysName <- paste("regional_coexpression/", structure, "/", windowName, ".cys", sep = "")
-  saveNetwork(cw, cysName, format = "cys")
-  svgName <- paste("regional_coexpression/", structure, "/", windowName, ".svg", sep = "")
-  saveImage(cw, svgName, "svg")
+  # cysName <- paste("regional_coexpression/", structure, "/", windowName, ".cys", sep = "")
+  # saveNetwork(cw, cysName, format = "cys")
+  # svgName <- paste("regional_coexpression/", structure, "/", windowName, ".svg", sep = "")
+  # saveImage(cw, svgName, "svg")
+  edgeTable[signif_idx, ]
 })
 
 #Plot mean coexpression between top 25 gene sets

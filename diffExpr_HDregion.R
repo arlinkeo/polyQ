@@ -2,6 +2,7 @@
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 options(stringsAsFactors = FALSE)
 library(reshape2)
+library("RDAVIDWebService")
 
 load("resources/polyQ.RData")
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
@@ -36,10 +37,14 @@ save(pValues, file = "resources/diffExpr_pval.RData")
 diffGenes <- pValues$corrected <0.05
 upGenes <- Reduce("&", list(diffGenes, pValues$`Median expr. in` > pValues$`Median expr. out`))
 upGenes <- pValues[upGenes, ]
+upGenes <- cbind(gene_symbol = sapply(rownames(upGenes), entrezId2Name), entrez_id = rownames(upGenes), upGenes)
 upGenes <- upGenes[order(upGenes$corrected), ]
+write.table(upGenes, file = "diffExpr_upregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 downGenes <- Reduce("&", list(diffGenes, pValues$`Median expr. in` < pValues$`Median expr. out`))
 downGenes <- pValues[downGenes, ]
+downGenes <- cbind(gene_symbol = sapply(rownames(downGenes), entrezId2Name), entrez_id = rownames(downGenes), downGenes)
 downGenes <- downGenes[order(downGenes$corrected), ]
+write.table(downGenes, file = "diffExpr_downregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 pq_pValues <- pValues[pQEntrezIDs, ]
 pq_pValues <- pq_pValues[order(pq_pValues$corrected), ]
@@ -62,3 +67,23 @@ legend("topright", c("Outside","Inside"), fill = c("turquoise", "orange"))
 positionLabels <- sapply(pq_plotIdx, function(x){idx <- c(x*2-1, x*2); max(a$out[which(a$group %in% idx)])+1})
 text(pq_plotIdx*3-1.5, positionLabels, labels = paste("p = ", pq_pValues$corrected[pq_plotIdx], sep = ""), cex = 0.5)
 dev.off()
+
+#Functional enrichment of up- and down-regulated genes
+david<-DAVIDWebService$new(email="D.L.Keo@tudelft.nl", 
+                           url="https://david.abcc.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL"))
+bg_list <- probeInfo$entrez_id
+bg <- addList(david, bg_list, idType = "ENTREZ_GENE_ID", listName = "AHBA background", listType = "Background")
+bg
+t <- 0.05 # EASE p-value threshold
+setTimeOut(david, 200000)
+
+result <- addList(david, upGenes$entrez_id, idType = "ENTREZ_GENE_ID", listName = "diffExpr_upregulated", listType = "Gene")
+print(result)
+setCurrentBackgroundPosition(david, 1)
+getFunctionalAnnotationChartFile(david, "diffExpr_upregulated_goterms.txt", threshold=t, count=2L)
+
+result <- addList(david, downGenes$entrez_id, idType = "ENTREZ_GENE_ID", listName = "diffExpr_downregulated", listType = "Gene")
+print(result)
+setCurrentBackgroundPosition(david, 1)
+getFunctionalAnnotationChartFile(david, "diffExpr_downregulated_goterms.txt", threshold=t, count=2L)

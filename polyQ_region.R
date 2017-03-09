@@ -32,6 +32,3 @@ library(RColorBrewer)
 pQcolors <- brewer.pal(9, "Set1")
 names(pQcolors) <- polyQgenes
 save(structureIDs, pQgeneInfo, pQEntrezIDs, polyQgenes, pQcolors, file = "polyQ.RData")
-
-print("Finished")
-#apply(structureIDs, 1, rsCor)

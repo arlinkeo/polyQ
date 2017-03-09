@@ -1,5 +1,5 @@
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-library(WGCNA)
+#library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Probe info (entrez_id)
@@ -13,11 +13,11 @@ brainExpr <- lapply(brainNames, function (x) {
   colnames(expr) <- read.csv(paste("../ABA_human_processed/sample_info_normalized_microarray_", x, "_2014-11-11.csv", sep = ""))[ , 1]
   expr
 })
-save(brainExpr, file = "BrainExpr.RData")
+save(brainExpr, file = "resources/BrainExpr.RData")
 
 # Sample structures
 ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
-structures <- c("brain","frontal lobe", "mesencephalon", "striatum", "hypothalamus", "pons", "parietal lobe", "cerebellar cortex")
+structures <- c("brain","frontal lobe", "mesencephalon", "striatum", "hypothalamus", "pons", "parietal lobe", "cerebellar cortex", "cerebellum")
 structureIDs <- ontology[ontology$name %in% structures, ][ , c(1:3)]
 
 #Select PolyQ genes from data
@@ -31,4 +31,4 @@ polyQgenes <- pQgeneInfo[ , 4]
 library(RColorBrewer)
 pQcolors <- brewer.pal(9, "Set1")
 names(pQcolors) <- polyQgenes
-save(structureIDs, pQgeneInfo, pQEntrezIDs, polyQgenes, pQcolors, file = "polyQ.RData")
+save(structureIDs, pQgeneInfo, pQEntrezIDs, polyQgenes, pQcolors, file = "resources/polyQ.RData")

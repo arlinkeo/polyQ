@@ -1,5 +1,4 @@
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-#library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Probe info (entrez_id)

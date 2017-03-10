@@ -10,7 +10,6 @@ load("resources/polyQ.RData")
 # Number of samples in atomic structures and HD regions
 donorNames <- names(sampleIDs[[1]])
 sampleIDs_HD <- sampleIDs[["HD_region"]]
-sampleIDs <- sampleIDs[-9]
 overlap <- sapply(sampleIDs, function(s){
   sapply(donorNames, function(d){
     samples <- bitwAnd(s[[d]], sampleIDs_HD[[d]])

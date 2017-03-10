@@ -6,21 +6,11 @@ options(stringsAsFactors = FALSE)
 load("resources/BrainExpr.RData")
 ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 load("resources/polyQ.RData")
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
-structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
-rownames(structureIDs) <- structureIDs$name
 donorNames <- names(brainExpr)
 names(donorNames) <- donorNames
 
-#Select HD region-specific samples
-sampleIDs_HD <- lapply(donorNames, function(d){
-  networkInfo <- read.csv(paste("regional_coexpression/HD_region/samples_in_networks_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
-  networkB <- networkInfo[, "network_B"]
-  networkD <- networkInfo[, "network_D"]
-  bitwOr(networkB, networkD)
-})
 #Select anatomic region-specific samples
-sampleIDs <- apply(structureIDs[-9, ], 1, function(id){
+sampleIDs <- apply(structureIDs, 1, function(id){
   print(id)
   structName <- id[2]
   ontologyRows <- grep(id[1], ontology$structure_id_path)
@@ -33,6 +23,14 @@ sampleIDs <- apply(structureIDs[-9, ], 1, function(id){
     as.numeric(cols)
   })
 })
+#Select HD region-specific samples
+structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
+sampleIDs_HD <- lapply(donorNames, function(d){
+  networkInfo <- read.csv(paste("regional_coexpression/HD_region/samples_in_networks_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
+  networkB <- networkInfo[, "network_B"]
+  networkD <- networkInfo[, "network_D"]
+  bitwOr(networkB, networkD)
+})
 #Combine info
-sampleIDs <- c(sampleIDs, HD_region = list(sampleIDs_HD))
+sampleIDs <- c(HD_region = list(sampleIDs_HD), sampleIDs)
 save(sampleIDs, file = "resources/sampleIDs.RData")

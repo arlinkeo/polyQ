@@ -1,11 +1,11 @@
 # Co-expression distribution of polyQ genes
-
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
+structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
@@ -13,17 +13,14 @@ entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInf
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 # Load data
-coexpr_dist <- lapply(structures, function(r){
-  fName <- paste("regional_coexpression/", r[3], "/meanCor_", r[2], ".RData", sep = "")
-  attach(fName)
-  mat <- meanCor[pQEntrezIDs, ]
-  detach(2)
-  mat
-})
-load("HD_masks_Coppen2016/meanCor_HDnetworkBD.RData")
-mat_HD <- meanCor[pQEntrezIDs, ]
-coexpr_dist <- c(coexpr_dist, list(HD_region = mat_HD))
-save(coexpr_dist, file = "resources/coexpr_dist.RData")
+# coexpr_dist <- lapply(structures, function(r){
+#   fName <- paste("regional_coexpression/", r[3], "/meanCor_", r[2], ".RData", sep = "")
+#   attach(fName)
+#   mat <- meanCor[pQEntrezIDs, ]
+#   detach(2)
+#   mat
+# })
+# save(coexpr_dist, file = "resources/coexpr_dist.RData")
 load("resources/coexpr_dist.RData")
 
 # Plot co-expression distribution

@@ -11,8 +11,10 @@ make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(
 
 #Concatenate binary info of all donors
 load("resources/sampleIDs.RData")
-inHDregion <- do.call(c, sampleIDs[["HD_region"]]) # Binary vector for each donor
-selection <- as.logical(inHDregion)
+inHDregion <- as.logical(do.call(c, sampleIDs[["HD_region"]])) # Binary vector for each donor
+inCb<- as.logical(do.call(c, sampleIDs[["cerebellum"]])) #Cerebellum samples to remove from analysis
+inSelection <- inHDregion & !inCb
+outSelection <- !inHDregion & !inCb
   
 #Concatenate expression data of all donors
 load("resources/brainExpr.RData") 
@@ -20,8 +22,8 @@ expr <- do.call(cbind, brainExpr) # 19992*3702 matrix
 
 #Rank-sum test for each gene
 pValues <- t(apply(expr, 1, function(g){
-  exprIn <- g[selection]
-  exprOut <- g[!selection]
+  exprIn <- g[inSelection]
+  exprOut <- g[outSelection]
   res <- wilcox.test(exprIn, exprOut)
   c(median(exprIn), median(exprOut), res$p.value)
 }))
@@ -30,21 +32,21 @@ colnames(pValues) <- c("Median expr. in", "Median expr. out", "p-value")
 # corrected p-values
 pVal <- pValues[, 3]
 corrected <- p.adjust(pVal, method = "bonferroni", length(pVal))
-#gene <- unlist(sapply(rownames(pValues), entrezId2Name))
 pValues <- as.data.frame(cbind(pValues, corrected))
 save(pValues, file = "resources/diffExpr_pval.RData")
+load("resources/diffExpr_pval.RData")
 
-diffGenes <- pValues$corrected <0.05
+diffGenes <- pValues$corrected <0.01
 upGenes <- Reduce("&", list(diffGenes, pValues$`Median expr. in` > pValues$`Median expr. out`))
 upGenes <- pValues[upGenes, ]
 upGenes <- cbind(gene_symbol = sapply(rownames(upGenes), entrezId2Name), entrez_id = rownames(upGenes), upGenes)
 upGenes <- upGenes[order(upGenes$corrected), ]
-write.table(upGenes, file = "diffExpr_upregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+#write.table(upGenes, file = "diffExpr_upregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 downGenes <- Reduce("&", list(diffGenes, pValues$`Median expr. in` < pValues$`Median expr. out`))
 downGenes <- pValues[downGenes, ]
 downGenes <- cbind(gene_symbol = sapply(rownames(downGenes), entrezId2Name), entrez_id = rownames(downGenes), downGenes)
 downGenes <- downGenes[order(downGenes$corrected), ]
-write.table(downGenes, file = "diffExpr_downregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+#write.table(downGenes, file = "diffExpr_downregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 pq_pValues <- pValues[pQEntrezIDs, ]
 pq_pValues <- pq_pValues[order(pq_pValues$corrected), ]

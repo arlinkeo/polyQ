@@ -5,7 +5,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(x){gsub(" ", "_", x)})
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
@@ -40,6 +40,7 @@ info <- lapply(regions, function(r){
       setCurrentBackgroundPosition(david, 1)
       fname <- paste("regional_coexpression/", r, "/goterms050_", region.acronym(r), "_", pqname, ".txt", sep = "")
       getFunctionalAnnotationChartFile(david, fname, threshold=t, count=2L)
+      fat <- getFunctionalAnnotationTable(david)
       result
     }
   })

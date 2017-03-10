@@ -11,10 +11,8 @@ make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(
 
 #Concatenate binary info of all donors
 load("resources/sampleIDs.RData")
-inHDregion <- as.logical(do.call(c, sampleIDs[["HD_region"]])) # Binary vector for each donor
-inCb<- as.logical(do.call(c, sampleIDs[["cerebellum"]])) #Cerebellum samples to remove from analysis
-inSelection <- inHDregion & !inCb
-outSelection <- !inHDregion & !inCb
+inHDregion <- do.call(c, sampleIDs[["HD_region"]]) # Binary vector for each donor
+selection <- as.logical(inHDregion)
   
 #Concatenate expression data of all donors
 load("resources/brainExpr.RData") 
@@ -22,8 +20,8 @@ expr <- do.call(cbind, brainExpr) # 19992*3702 matrix
 
 #Rank-sum test for each gene
 pValues <- t(apply(expr, 1, function(g){
-  exprIn <- g[inSelection]
-  exprOut <- g[outSelection]
+  exprIn <- g[selection]
+  exprOut <- g[!selection]
   res <- wilcox.test(exprIn, exprOut)
   c(median(exprIn), median(exprOut), res$p.value)
 }))

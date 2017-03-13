@@ -17,7 +17,7 @@ names(regions) <- regions
 # Open connection to DAVID
 david<-DAVIDWebService$new(email="D.L.Keo@tudelft.nl", 
                            url="https://david.abcc.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
-setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL", "KEGG_PATHWAY", "BIOCARTA", "BIOGRID_INTERACTION", "DIP", "INTACT", "MINT"))
+setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL"))#, "KEGG_PATHWAY", "BIOCARTA", "BIOGRID_INTERACTION", "DIP", "INTACT", "MINT"))
 
 # Background list from AHBA probe info
 bg_list <- probeInfo$entrez_id
@@ -39,7 +39,7 @@ info <- lapply(regions, function(r){
       setCurrentBackgroundPosition(david, 1)
       fname <- paste("regional_coexpression/", r, "/goterms050_", region.acronym(r), "_", pqname, ".txt", sep = "")
       getFunctionalAnnotationChartFile(david, fname, threshold=t, count=2L)
-      fat <- getFunctionalAnnotationTable(david)
+      #fat <- getFunctionalAnnotationTable(david)
       result
     }
   })

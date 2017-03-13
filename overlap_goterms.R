@@ -5,7 +5,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 rownames(structureIDs) <- structureIDs$name
 structures <- split(structureIDs, seq(nrow(structureIDs)))
@@ -71,42 +71,42 @@ dev.off()
 
 #Number of overlapping terms for each polyQ pair
 termSetOverlap <- lapply(ll2, setOverlap)
-termSetOverlapSignif <- sapply(ll2, function(r){setOverlapSignif(r, total = 19992)})
+#termSetOverlapSignif <- sapply(ll2, function(r){setOverlapSignif(r, total = 19992)})
 save(termSetOverlap, file = "resources/termSetOverlap.RData")
-save(termSetOverlapSignif, file = "resources/termSetOverlapSignif.RData")
-
-#Load asssociations info from literature
-associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
-associations <- associations[ , c(15:17, 1:14)]
-# Sort rows by associations
-SCA_and_HD <- which(bitwAnd(associations$SCA_total, associations$HD_total) == 1)
-SCA <- which(associations$SCA_total == 1)
-only_SCA <- SCA[-which(SCA == SCA_and_HD)]
-HD <- which(associations$HD_total == 1)
-only_HD <- HD[-which(HD == SCA_and_HD)]
-only_HD <- only_HD[order(associations[only_HD, ]$SCA_total)]
-not_SCA_and_HD <- c(which(associations$SCA_or_HD == 0), which(is.na(associations$SCA_or_HD)))
-order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
-associations <- associations[order, ]
-
-pdf(file = "overlap_goterms050.pdf", 21, 28)
-par(mar = c(6, 10, 15, 4));
-layout(matrix(c(1:2), 2, 1))
-par(mai = c(0.5, 2, 3, 0.5))
-
-overlapTable <- sapply(termSetOverlap, function(r){sapply(r, length)})
-overlapTable <- overlapTable[rownames(associations), ]
-table <- cbind(overlapTable, associations)
-labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
-                 setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
-                 textMatrix = table, main = "Overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
-
-signifTable <- termSetOverlapSignif[rownames(associations), ]
-table_a <- cbind(1 - signifTable, associations) # Manipulate plot function to get colors of significance right
-table <- apply(signifTable, c(1,2), function(x){format(x, digits = 2)})
-table_b <- cbind(table, associations)
-labeledHeatmap(table_a, xLabels = colnames(table_b), yLabels = make.italic(rownames(table_b)),
-               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = blueWhiteRed(200)[100:200], plotLegend = FALSE,
-               textMatrix = table_b, main = "Significant overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
-
-dev.off()
+#save(termSetOverlapSignif, file = "resources/termSetOverlapSignif.RData")
+# 
+# #Load asssociations info from literature
+# associations <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")
+# associations <- associations[ , c(15:17, 1:14)]
+# # Sort rows by associations
+# SCA_and_HD <- which(bitwAnd(associations$SCA_total, associations$HD_total) == 1)
+# SCA <- which(associations$SCA_total == 1)
+# only_SCA <- SCA[-which(SCA == SCA_and_HD)]
+# HD <- which(associations$HD_total == 1)
+# only_HD <- HD[-which(HD == SCA_and_HD)]
+# only_HD <- only_HD[order(associations[only_HD, ]$SCA_total)]
+# not_SCA_and_HD <- c(which(associations$SCA_or_HD == 0), which(is.na(associations$SCA_or_HD)))
+# order <- c(only_SCA, SCA_and_HD, only_HD, not_SCA_and_HD)
+# associations <- associations[order, ]
+# 
+# pdf(file = "overlap_goterms050.pdf", 21, 28)
+# par(mar = c(6, 10, 15, 4));
+# layout(matrix(c(1:2), 2, 1))
+# par(mai = c(0.5, 2, 3, 0.5))
+# 
+# overlapTable <- sapply(termSetOverlap, function(r){sapply(r, length)})
+# overlapTable <- overlapTable[rownames(associations), ]
+# table <- cbind(overlapTable, associations)
+# labeledHeatmap(as.matrix((table > 0) + 0), xLabels = colnames(table), yLabels = make.italic(rownames(table)), 
+#                  setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "red"), plotLegend = FALSE,
+#                  textMatrix = table, main = "Overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
+# 
+# signifTable <- termSetOverlapSignif[rownames(associations), ]
+# table_a <- cbind(1 - signifTable, associations) # Manipulate plot function to get colors of significance right
+# table <- apply(signifTable, c(1,2), function(x){format(x, digits = 2)})
+# table_b <- cbind(table, associations)
+# labeledHeatmap(table_a, xLabels = colnames(table_b), yLabels = make.italic(rownames(table_b)),
+#                setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = blueWhiteRed(200)[100:200], plotLegend = FALSE,
+#                textMatrix = table_b, main = "Significant overlap of GO terms between two polyQ gene sets after multiple testing (Benjamini < 0.05)")
+# 
+# dev.off()

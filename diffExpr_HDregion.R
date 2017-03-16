@@ -39,12 +39,12 @@ upGenes <- Reduce("&", list(diffGenes, pValues$`Median expr. in` > pValues$`Medi
 upGenes <- pValues[upGenes, ]
 upGenes <- cbind(gene_symbol = sapply(rownames(upGenes), entrezId2Name), entrez_id = rownames(upGenes), upGenes)
 upGenes <- upGenes[order(upGenes$corrected), ]
-#write.table(upGenes, file = "diffExpr_upregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(upGenes, file = "diffExpr_upregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 downGenes <- Reduce("&", list(diffGenes, pValues$`Median expr. in` < pValues$`Median expr. out`))
 downGenes <- pValues[downGenes, ]
 downGenes <- cbind(gene_symbol = sapply(rownames(downGenes), entrezId2Name), entrez_id = rownames(downGenes), downGenes)
 downGenes <- downGenes[order(downGenes$corrected), ]
-#write.table(downGenes, file = "diffExpr_downregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(downGenes, file = "diffExpr_downregulated.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 pq_pValues <- pValues[pQEntrezIDs, ]
 pq_pValues <- pq_pValues[order(pq_pValues$corrected), ]

@@ -59,7 +59,7 @@ dups <- sapply(regionLs, function(x){idx <- which(duplicated(colnames(x))); sapp
 #sum <- sapply(regionLs, function(x){dim(x)[1]-9}) #Minus 9 polyQ genes
 
 #Sort and plot table
-colorder <- c("brain", "frontal_lobe", "parietal_lobe", "striatum", "hypothalamus", "mesencephalon", "cerebellar_cortex", "pons", "HD_region")
+colorder <- c("HD_region", "brain", "frontal_lobe", "parietal_lobe", "striatum", "hypothalamus", "mesencephalon", "cerebellar_cortex", "pons")
 table <- sapply(regionLs, function(x){sapply(x, length)})
 rownames(table) <- sapply(rownames(table), entrezId2Name)
 Total <- apply(table, 2, sum)

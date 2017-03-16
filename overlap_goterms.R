@@ -6,7 +6,7 @@ options(stringsAsFactors = FALSE)
 #Prepare data and functions
 load("resources/polyQ.RData")
 structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
-structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
+structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 rownames(structureIDs) <- structureIDs$name
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name

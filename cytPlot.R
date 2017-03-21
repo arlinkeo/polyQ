@@ -5,18 +5,25 @@ library(RCy3)
 options(stringsAsFactors = FALSE)
 
 load("resources/polyQ.RData")
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
-structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
-rownames(structureIDs) <- structureIDs$name
-pqPairs <- t(combn(polyQgenes, 2))
-rownames(pqPairs) <- apply(pqPairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
-
-# Node info
 load("resources/avgExpr.RData")
 load("resources/avgExprColor.RData")
 
+structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
+structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
+rownames(structureIDs) <- structureIDs$name
+
+pqOrder <- c(3, c(1:2), c(4:9))
+polyQgenes <- polyQgenes[pqOrder]
+pQEntrezIDs <- pQEntrezIDs[pqOrder]
+#pQcolors, pQgeneInfo
+avgExpr <- avgExpr[pqOrder, ]
+avgExprColor <- avgExprColor[pqOrder, ]
+
+pqPairs <- t(combn(polyQgenes, 2))
+rownames(pqPairs) <- apply(pqPairs, 1, function(x){paste(x[1], "-", x[2], sep = "")})
+
 linMap <- function(x){
-  if (x>0.5) (x - 0.5) * 2 * 10 + 2
+  if (x>0.5) round((x - 0.5) * 2 * 10 + 2, digits = 1)
   else 0
 }
 # Cytoscape default visuals
@@ -38,13 +45,13 @@ apply(structureIDs, 1, function(id){
   id <- unlist(id)
   structName <- id[2]
   structure <- id[3]
-  mat <- sc_list[[structure]] # adjacency matrix
-  width <- apply(mat, c(1,2), linMap)
-  
+  mat <- sc_list[[structure]][pqOrder, pqOrder] # adjacency matrix
+  edgeTable <- as.data.frame(as.table(mat))
+  colnames(edgeTable) <- c("fromNode", "toNode", "coexpr")
+  edgeTable$edgeType <- rep("coexpr", dim(edgeTable)[1])
+  edgeTable$width <- sapply(edgeTable$coexpr, linMap)
   nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], exprColor = avgExprColor[, structure])
-  edgeTable <- data.frame(fromNode = pqPairs[ , 1], toNode = pqPairs[ , 2], edgeType="interaction",
-                          interaction = apply(pqPairs, 1, function(x){mat[x[1], x[2]]}), 
-                          width = apply(pqPairs, 1, function(x){width[x[1], x[2]]}))
+
   g <- cyPlot(nodeTable, edgeTable)
   windowName <- paste("pqNeighbors_",structName, sep = "")
   cw <- CytoscapeWindow(windowName, graph = g, overwrite = TRUE)
@@ -108,14 +115,14 @@ interaction_list2 <- apply(structureIDs, 1, function(id){
   id <- unlist(id)
   structName <- id[2]
   structure <- id[3]
-  mat <- termSetOverlap[[structure]] # adjacency matrix
-  width <- apply(mat, c(1,2), log1p)
+  overlap <- sapply(termSetOverlap[[structure]], length)
+  pqPairs <- t(sapply(names(overlap), function(x){unlist(strsplit(x, split = "-"))}))
+  width <- sapply(overlap, log1p)
   #matSignif <- termSetOverlapSignif[[structure]] # adjacency matrix
   
   nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], exprColor = avgExprColor[, structure])
   edgeTable <- data.frame(fromNode = pqPairs[ , 1], toNode = pqPairs[ , 2], edgeType="overlap",
-                          overlap = apply(pqPairs, 1, function(x){mat[x[1], x[2]]}), 
-                          width = apply(pqPairs, 1, function(x){width[x[1], x[2]]})) 
+                          overlap = overlap, width = width) 
                           #overlapSignif = apply(pqPairs, 1, function(x){matSignif[x[1], x[2]]}))
   g <- cyPlot(nodeTable, edgeTable)
   windowName <- paste("overlapTermSets_",structName, sep = "")

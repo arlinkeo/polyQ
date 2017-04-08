@@ -50,7 +50,19 @@ ll <- lapply(ll, function(s){
 # Lists without multiple testing
 ll1 <- lapply(ll, function(r){lapply(r, function(pq){pq$Term})})
 # Filter terms based on Benjamini p-value < 0.05
-ll2 <- lapply(ll, function(r){lapply(r, function(pq){pq[pq$Benjamini < 0.05, ]$Term})})
+ll2 <- lapply(ll, function(r){
+  dataList <- lapply(names(r), function(pq){
+    dat <- r[[pq]]
+    rows <- dat$Benjamini < 0.05
+    res <- dat[rows, c("Term", "Benjamini")]
+    res$Term <- sapply(res$Term, function(x){unlist(strsplit(x, split = "~"))[1]})
+    write.table(res, file = paste("regional_coexpression/HD_region/goterms050_HDregion_", pq, "_pval.txt", sep = ""), 
+                quote = FALSE, row.names = FALSE, sep = "\t")
+  })
+  
+})
+
+
 rm(ll)
 
 # Plot table with number of terms in each geneset

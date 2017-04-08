@@ -4,7 +4,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
+structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
@@ -22,6 +22,7 @@ make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(
 # })
 # save(coexpr_dist, file = "resources/coexpr_dist.RData")
 load("resources/coexpr_dist.RData")
+coexpr_dist$brain <- NULL
 
 # Plot co-expression distribution
 pdf(file = "coexpr_dist.pdf", 16, 12)

@@ -5,14 +5,11 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs[ , 3] <- gsub(" ", "_", structureIDs[ , 3])
-structureIDs <- rbind(structureIDs, c(NA, "HDnetworkBD", "HD_region"))
-
+structureIDs <- rbind(c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-# name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 ### Load single correlations between polyQ genes ###
@@ -28,4 +25,18 @@ sc_list <- lapply(structures, function(x) {
 })
 save(sc_list, file = "resources/sc_list.RData")
 
-sort(sapply(sc_list, function(x){x[7,3]}))
+###PLot heatmaps for all regions
+structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
+mat_hd <- sc_list$HD_region#Cluster in HD
+geneTree = hclust(as.dist(1-mat_hd), method = "average");
+order <- rev(geneTree$order)#Order of all maps as in HD region
+
+pdf(file = "coexpression_heatmap.pdf", 8, 9)
+par(mar = c(5,6,12,3));
+lapply(structureIDs$name, function(r){
+  mat <- sc_list[[r]][order, order]
+  labels <- rownames(mat)
+  labeledHeatmap(mat, xLabels = make.italic(labels), colors = blueWhiteRed(200), zlim = c(-1,1), setStdMargins = FALSE, 
+               main = paste("Direct co-expression in ", r, sep =""), cex.lab = 1.3, textMatrix = round(mat, digits = 2))
+})
+dev.off()

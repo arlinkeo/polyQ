@@ -5,10 +5,11 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
-structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
+structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
+structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
+#entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
+entrezId2Name <- function (x) { row <- match(x, probeInfo$entrez_id); probeInfo[row, 4]}
 name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 setOverlap <- dget("polyQ_scripts/setOverlap.R")
@@ -49,14 +50,100 @@ associations <- associations[order, ]
 
 load("resources/genesets_threshold050.RData")
 regionLs <- lapply(regionLs, function(s){
-  names(s) <- sapply(names(s), entrezId2Name)# pQ genes to entrezID
+  names(s) <- entrezId2Name(names(s))# sapply(names(s), entrezId2Name)# pQ genes to entrezID
+  s <- sapply(s, entrezId2Name)
   s
 })
 
-geneSetOverlap <- lapply(regionLs, setOverlap)
-geneSetOverlapSignif <- sapply(regionLs, function(r){setOverlapSignif(r, total = 19992)})
-save(geneSetOverlap, file = "resources/geneSetOverlap.RData")
-save(geneSetOverlapSignif, file = "resources/geneSetOverlapSignif.RData")
+# geneSetOverlap <- lapply(regionLs, setOverlap)
+# geneSetOverlapSignif <- sapply(regionLs, function(r){setOverlapSignif(r, total = 19992)})
+# save(geneSetOverlap, file = "resources/geneSetOverlap.RData")
+# save(geneSetOverlapSignif, file = "resources/geneSetOverlapSignif.RData")
+load("resources/geneSetOverlap.RData")
+load("resources/geneSetOverlapSignif.RData")
+
+# Print shared co-expressed genes
+ube2Fam <- read.table(file = "UBE2_genefamily.txt", header = TRUE, sep = "\t")
+dnaBindGenes <- read.table(file = "dna_binding_genes.txt")[,1]
+ubiqGenes <- read.table(file = "ubiquitination_genes.txt")[,1]
+
+structs <- structureIDs$name
+names(structs) <- structs
+
+hipGene <- lapply(structs, function(r){
+  sapply(polyQgenes, function(g) {
+    set <- regionLs[[r]][[g]]
+    set[set %in% "9026"]
+  })
+})
+hipGene <- lapply(hipGene, function(x){x[lapply(x, length)>0]})
+
+dnaBGenes <- lapply(structs, function(r){
+  sapply(polyQgenes, function(g) {
+    intersect(regionLs[[r]][[g]], dnaBindGenes)
+  })
+})
+dnaGenesTable <- sapply(dnaBGenes, function(r){sapply(r, length)})
+dnaBGenes <- lapply(dnaBGenes, function(x){x[lapply(x, length)>0]})
+pdf(file = "dna_repair_genes.pdf", 8, 9)
+par(mar = c(2,6,12,3));
+labeledHeatmap(replace(dnaGenesTable, which(dnaGenesTable == 0), NA), xLabels = colnames(dnaGenesTable), xLabelsPosition = "top", 
+                 yLabels = make.italic(rownames(dnaGenesTable)), colors = blueWhiteRed(200)[100:200], 
+                 main = "DNA repair genes in gene sets", setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = dnaGenesTable)
+dev.off()
+ubGenes <- lapply(structs, function(r){
+  sapply(polyQgenes, function(g) {
+    intersect(regionLs[[r]][[g]], ubGenes)
+  })
+})
+ubGenesTable <- sapply(ubGenes, function(r){sapply(r, length)})
+#dnaBGenes <- lapply(dnaBGenes, function(x){x[lapply(x, length)>0]})
+pdf(file = "ubiquitination_genes.pdf", 8, 9)
+par(mar = c(2,6,12,3));
+labeledHeatmap(replace(dnaGenesTable, which(dnaGenesTable == 0), NA), xLabels = colnames(dnaGenesTable), xLabelsPosition = "top", 
+               yLabels = make.italic(rownames(dnaGenesTable)), colors = blueWhiteRed(200)[100:200], 
+               main = "Ubiquitination genes in gene sets", setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = dnaGenesTable)
+dev.off()
+
+ubGenes <- sapply(polyQgenes, function(g) {
+  set <- sapply(regionLs$HD_region[[g]], entrezId2Name)
+  res1 <- c(intersect(set, ube2Fam$Approved.Symbol), intersect(set, ube2Fam$Previous.Symbols))
+  res2 <- set[grep("UB", set)]
+  c(res1, res2)
+})
+ubGenes <- ubGenes[lapply(ubGenes, length)>0]
+
+common_interactors <- t(sapply(polyQgenes, function(g){
+  hdSet <- regionLs$HD_region[[g]]
+  sapply(structureIDs$name[-8], function(r){
+    common <- intersect(hdSet, regionLs[[r]][[g]])
+    length(common)
+  })
+}))
+
+pairs <- names(geneSetOverlap$HD_region)
+common_overlap <- t(sapply(pairs, function(p){
+  hdSet <- geneSetOverlap$HD_region[[p]]
+  sapply(structureIDs$name[-8], function(r){
+    common <- intersect(hdSet, geneSetOverlap[[r]][[p]])
+    length(common)
+  })
+}))
+
+sharedUbGenes <- sapply(pairs, function(p){
+  set <- sapply(geneSetOverlap$HD_region[[p]], entrezId2Name)
+  res1 <- c(intersect(set, ube2Fam$Approved.Symbol), intersect(set, ube2Fam$Previous.Symbols))
+  res2 <- set[grep("UB", set)]
+  c(res1, res2)
+})
+sharedUbGenes <- sharedUbGenes[lapply(sharedUbGenes, length)>0]
+Reduce(intersect, sharedUbGenes)
+unique(Reduce(c, sharedUbGenes))
+
+all <-Reduce(union, regionLs$HD_region)
+all <- sapply(all, entrezId2Name)
+all[grep("UBE2", all)]
+c(intersect(all, ube2Fam$Approved.Symbol), intersect(all, ube2Fam$Previous.Symbols))
 
 # Plot number of overlapping genes and its significance for gene sets with threshold > 0.5
 pdf(file = "overlap_geneSets.pdf", 21, 28)

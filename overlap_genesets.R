@@ -93,7 +93,7 @@ labeledHeatmap(replace(dnaGenesTable, which(dnaGenesTable == 0), NA), xLabels = 
 dev.off()
 ubGenes <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
-    intersect(regionLs[[r]][[g]], ubGenes)
+    intersect(regionLs[[r]][[g]], ubiqGenes)
   })
 })
 ubGenesTable <- sapply(ubGenes, function(r){sapply(r, length)})

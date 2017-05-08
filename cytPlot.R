@@ -32,11 +32,9 @@ linMap <- function(x){
 cyt.visuals <- function(cw) {
   layoutNetwork (cw, layout.name = "circular")
   setDefaultNodeShape (cw, "Ellipse")
-  setDefaultNodeFontSize (cw, 8)
-  setNodeHeightDirect(cw, polyQgenes, 30)
-  setNodeWidthDirect(cw, polyQgenes, 30)
+  setDefaultNodeFontSize (cw, 16)
   #lockNodeDimensions (cw, TRUE) # Not implemented yet in RCy3
-  #setDefaultNodeSize(cw, 30)
+  #setDefaultNodeSize(cw, 35)
   #showGraphicsDetails(cw, TRUE) # Not implemented yet in RCy3
 }
 
@@ -65,8 +63,8 @@ apply(structureIDs, 1, function(id){
   colnames(edgeTable) <- c("fromNode", "toNode", "coexpr")
   edgeTable$edgeType <- rep("coexpr", dim(edgeTable)[1])
   edgeTable$width <- sapply(edgeTable$coexpr, linMap)
-  # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
-  nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
+  nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
+  # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
 
   g <- cyPlot(nodeTable, edgeTable)
   windowName <- paste("pqNeighbors_",structName, sep = "")
@@ -102,8 +100,8 @@ interaction_list <- apply(structureIDs, 1, function(id){
   width <- sapply(overlap, log1p)
   signif <- geneSetOverlapSignif[, structure] # adjacency matrix
   
-  # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
-  nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
+  nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
+  # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
   edgeTable <- data.frame(fromNode = pqPairs[ , 1], toNode = pqPairs[ , 2], edgeType="overlap",
                           overlap = overlap, width = width, signif = signif)
   g <- cyPlot(nodeTable, edgeTable)
@@ -132,8 +130,8 @@ interaction_list2 <- apply(structureIDs, 1, function(id){
   structure <- id[3]
   overlap <- as.numeric(overlapNumbers[, structure])
   width <- sapply(overlap, log1p)
-  # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
-  nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
+  nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
+  # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
   edgeTable <- data.frame(fromNode = pqPairs[ , 1], toNode = pqPairs[ , 2], overlap = overlap, 
                           edgeType="overlap", width = width)
   g <- cyPlot(nodeTable, edgeTable)

@@ -6,25 +6,26 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
-structureIDs <- rbind(structureIDs, c(0, "HDnetworkBD", "HD_region"))
+structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
+structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 #Load mean corr. data across 6 brains. and select based on threshold
 structures <- split(structureIDs, seq(nrow(structureIDs)))
+names(structures) <- structureIDs$name
 
-# regionLs <- lapply(structures, function(x) {
-#   f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
-#   print(f)
-#   attach(f)
-#   selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.50)))})
-#   names(selection) <- pQEntrezIDs
-#   detach(2)
-#   selection
-# })
-# save(regionLs, file = "resources/genesets_threshold050.RData")
-load("resources/genesets_threshold050.RData")
+regionLs <- lapply(structures, function(x) {
+  f <- paste("regional_coexpression/", gsub(" ", "_", x[3]), "/meanCor_", x[2], ".RData", sep = "")
+  print(f)
+  attach(f)
+  selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > 0.50)))})
+  names(selection) <- pQEntrezIDs
+  detach(2)
+  selection
+})
+save(regionLs, file = "resources/genesets_threshold050.RData")
 
 #Export network to Cytoscape and plot heatmaps
 lapply(c(1:9), function(x){
@@ -59,10 +60,17 @@ Total <- apply(table, 2, sum)
 table <- rbind(table, Total)
 table <- table[ , colorder]
 
-pdf(file = "regionLs_threshold050.pdf", 8, 9)
-par(mar = c(2,6,12,3));
-labeledHeatmap(replace(table, which(table == 1), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
+pdf(file = "regionLs_threshold.pdf", 12, 4.5)
+par(mfrow = c(1, 3), oma = c(1, 2, 0, 1), lwd = 0.01, mai = c(0, .6, 1.5, .3));
+for(i in 4:6){
+  f <- paste("resources/genesets_threshold0", i, "0.RData", sep = "")
+  attach(f)
+  table <- sapply(regionLs, function(x){sapply(x, length)})
+  rownames(table) <- sapply(rownames(table), entrezId2Name)
+  detach(2)
+  labeledHeatmap(replace(table, which(table == 1), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
                yLabels = c(make.italic(rownames(table)[-10]), rownames(table)[10]), colors = blueWhiteRed(200)[100:200], 
-               main = "Genes correlated >0.5 for each polyQ gene in different regions", 
-               setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
+               main = paste("co-expression >0.", i, "0", sep = ""), 
+               setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table, cex.main = 1.2, cex.text = 1, cex.lab = 1)
+  }
 dev.off()

@@ -20,16 +20,14 @@ sampleIDs <- apply(structureIDs, 1, function(id){
     ids <- intersect(selectIds, colnames(expr))
     cols <- colnames(expr) %in% ids
     print(paste("Samples: ", length(which(cols))))
-    as.numeric(cols)
+    as.integer(cols)
   })
 })
 #Select HD region-specific samples
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 sampleIDs_HD <- lapply(donorNames, function(d){
-  networkInfo <- read.csv(paste("regional_coexpression/HD_region/samples_in_networks_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
-  networkB <- networkInfo[, "network_B"]
-  networkD <- networkInfo[, "network_D"]
-  bitwOr(networkB, networkD)
+  networkInfo <- read.csv(paste("HD_mask/Huntington_results/networksamples_", d, ".txt", sep = ""), header = TRUE, sep = "\t", comment.char = "#")
+  as.numeric(networkInfo$Inside.y.n)
 })
 #Combine info
 sampleIDs <- c(HD_region = list(sampleIDs_HD), sampleIDs)

@@ -16,14 +16,14 @@ probeInfo <- read.csv("../../../../sjoerdhuisman/ABA_human_brain_probegene/probe
 
 #Select region-specific samples and calculate co-expression
 brainCorList <- lapply(donorNames, function(d){
-  samples <- sampleIDs$HD_region[[d]] # row/col numbers to select
+  samples <- as.logical(sampleIDs$HD_region[[d]]) # row/col numbers to select
   print(paste(d, ": ", sum(samples), " samples", sep = ""))
   expr <- brainExpr[[d]]
   corMat <- cor(t(expr[ , samples]))
   diag(corMat) <- 0
   corMat
 })
-save(brainCorList, file = paste("brainCorList_HDnetworkBD.RData", sep = ""))
+save(brainCorList, file = "brainCorList_HDnetworkBD.RData")
 remove(brainExpr)
 print("Correlation per brain saved")
 names(brainCorList) <- NULL

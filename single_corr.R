@@ -10,7 +10,7 @@ structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
+# make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 ### Load single correlations between polyQ genes ###
 sc_list <- lapply(structures, function(x) {
@@ -36,7 +36,7 @@ par(mar = c(5,6,12,3));
 lapply(structureIDs$name, function(r){
   mat <- sc_list[[r]][order, order]
   labels <- rownames(mat)
-  labeledHeatmap(mat, xLabels = make.italic(labels), colors = blueWhiteRed(200), zlim = c(-1,1), setStdMargins = FALSE, 
+  labeledHeatmap(mat, xLabels = labels, colors = blueWhiteRed(200), zlim = c(-1,1), setStdMargins = FALSE, 
                main = paste("Direct co-expression in ", r, sep =""), cex.lab = 1.3, textMatrix = round(mat, digits = 2))
 })
 dev.off()

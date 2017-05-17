@@ -10,19 +10,18 @@ structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
+# make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 # Load data
-# coexpr_dist <- lapply(structures, function(r){
-#   fName <- paste("regional_coexpression/", r[3], "/meanCor_", r[2], ".RData", sep = "")
-#   attach(fName)
-#   mat <- meanCor[pQEntrezIDs, ]
-#   detach(2)
-#   mat
-# })
-# save(coexpr_dist, file = "resources/coexpr_dist.RData")
+coexpr_dist <- lapply(structures, function(r){
+  fName <- paste("regional_coexpression/", r[3], "/meanCor_", r[2], ".RData", sep = "")
+  attach(fName)
+  mat <- meanCor[pQEntrezIDs, ]
+  detach(2)
+  mat
+})
+save(coexpr_dist, file = "resources/coexpr_dist.RData")
 load("resources/coexpr_dist.RData")
-coexpr_dist$brain <- NULL
 
 # Plot co-expression distribution
 pdf(file = "coexpr_dist.pdf", 16, 12)
@@ -31,7 +30,7 @@ par(oma = c(8,8,12,2), mai = c(0.2,0.2,0.5,0.2))
 layout(matrix(c(1:90), 9, 10), widths = c(2, rep(3, 9)), heights = rep(1, 9))
 lapply(polyQgenes, function(pq){
   plot(0, type = "n", axes=F, xlab="", ylab="")
-  mtext(make.italic(pq), 3, line = 0)
+  mtext(pq, 3, line = 0)
 })
 quantiles <- sapply(names(coexpr_dist), function(r){
   m <- coexpr_dist[[r]]

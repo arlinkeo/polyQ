@@ -53,6 +53,8 @@ new.order <- function(o, data){
 
 # Load info about direct interacters (single_corr.R)
 load("resources/sc_list.RData")
+#min expr across regions
+min(sapply(sc_list[names(sc_list) != "cerebellum"], function(x){x[x<=0.5]= NA;min(x, na.rm = TRUE)}))
 # Plot pqNeighbors in Cytoscape for each structure
 apply(structureIDs, 1, function(id){
   id <- unlist(id)
@@ -91,6 +93,10 @@ overlapNumbers <- data.frame(sapply(geneSetOverlap, function(r){sapply(r, length
 overlapNumbers <- new.order(pqPairs, overlapNumbers)
 load("resources/geneSetOverlapSignif.RData")
 geneSetOverlapSignif <- new.order(pqPairs, geneSetOverlapSignif)
+#max and min across regions
+overlapNumbers[geneSetOverlapSignif >= 0.05] <- NA
+max(apply(overlapNumbers, 2, max))
+min(apply(overlapNumbers, 2, function(x) min(x, na.rm = TRUE)));
 # Plot for overlap of gene sets
 interaction_list <- apply(structureIDs, 1, function(id){
   id <- unlist(id)
@@ -124,6 +130,10 @@ interaction_list <- apply(structureIDs, 1, function(id){
 load("resources/termSetOverlap.RData")
 overlapNumbers <- data.frame(sapply(termSetOverlap, function(r){sapply(r, length)}))
 overlapNumbers <- new.order(pqPairs, overlapNumbers)
+#max and min across regions
+overlapNumbers[overlapNumbers < 10] <- NA
+max(overlapNumbers, na.rm = T)
+min(apply(overlapNumbers, 2, function(x) min(x, na.rm = TRUE)));
 # Plot overlap
 interaction_list2 <- apply(structureIDs, 1, function(id){
   id <- unlist(id)
@@ -142,7 +152,7 @@ interaction_list2 <- apply(structureIDs, 1, function(id){
   cyt.visuals(cw)
   setNodeColorDirect(cw,  nodeTable[ , "nodeName"],  nodeTable[ , "color"])
   
-  edgeRows <- which(edgeTable$overlap > 10)
+  edgeRows <- which(edgeTable$overlap >= 10)
   edges <- apply(edgeTable[edgeRows, ], 1, function(e){paste(e[1], e[2], sep = " (overlap) ")})
   nonEdges <- apply(edgeTable[-edgeRows, ], 1, function(e){paste(e[1], e[2], sep = " (overlap) ")})
   selectEdges(cw, nonEdges)

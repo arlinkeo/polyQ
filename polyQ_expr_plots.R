@@ -51,7 +51,7 @@ pq_expr <- lapply(brainExpr, function(mat){mat[pQEntrezIDs, ]})
 ############################################################################
 ### Plot per donor all samples ###
 
-pdf(file = "polyQ_expr_plots2.pdf", 60, 40)
+pdf(file = "polyQ_expr_plots5.pdf", 60, 40)
 
 lapply(donorNames, function(d){
   expr <- as.matrix(pq_expr[[d]])
@@ -66,7 +66,7 @@ lapply(donorNames, function(d){
   par(mfrow = c(9, 1), oma = c(0, 0, 15, 0), lwd = 0.01, mai = c(1, 0, 1, 0));
   sapply(rownames(expr), function(x){
     barplot(expr[x, ], main = bquote(italic(.(entrezId2Name(x)))), cex.main = 10, col = colors, las = 2, cex.names = 0.5, 
-            ylim = c(0, 10.5), yaxt = 'n')
+            ylim = c(0, 10.5), yaxt = 'n', border = "gray")
     axis(2, pos = 0, cex.axis = 3)
   })
   title(paste("Donor ", d, sep = ""), outer = TRUE, cex.main = 8)

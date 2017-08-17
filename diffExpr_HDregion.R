@@ -5,13 +5,8 @@ library("reshape2")
 library("RDAVIDWebService")
 # library("metap")
 
-load("resources/polyQ.RData")
-probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) {probeInfo$gene_symbol[match(x, probeInfo$entrez_id)]} #Input is vector
-make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
+source("PolyQ_scripts/baseScript.R")
 load("../ABA_Rdata/BrainExpr.RData")
-donorNames <- names(brainExpr)
-names(donorNames) <- donorNames
 load("resources/sampleIDs.RData")
 sampleIDs <- sampleIDs[!names(sampleIDs) %in% c("brain", "cerebellum")]
 inHDregion <- sampleIDs[["HD_region"]] # Binary vector for each donor

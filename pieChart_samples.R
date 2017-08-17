@@ -21,17 +21,19 @@ colorsHD <- c("#956b53", colorOther)
 sumDonors <- apply(nSamples, 2, sum)
 nonHD <- sumDonors["brain"]-sumDonors["HD_region"]
 vecHD <- c(sumDonors["HD_region"], nonHD)
-names(vecHD) <- c("HD-associated region")
+names(vecHD) <- c("HD-associated region", "rest")
+names(vecHD) <- paste0(names(vecHD), " (", vecHD, ")")
 sum(vecHD)
 
 sumStruct <- sumDonors[-which(names(sumDonors) %in% c("brain", "HD_region"))]
 nonStruct <- sumDonors["brain"] - sum(sumStruct)
 vecStruct <- c(sumStruct, nonStruct)
-names(vecStruct) <- c(structures)
+names(vecStruct) <- c(structures[-1], "rest")
+names(vecStruct) <- paste0(names(vecStruct), " (", vecStruct, ")")
 
-pdf(file = "pieChart_samples.pdf", 12, 5)
+pdf(file = "Images/pieChart_samples.pdf", 12, 5)
 layout(matrix(c(1:2), 1, 2))
 par(mai = c(0,1,0,1), oma = c(0,2,0,2))
-pie(vecHD, init.angle = 90, col = colorsHD, radius = 0.5, main = "Total number of samples")
+pie(vecHD, clockwise = TRUE, col = colorsHD, radius = 0.5, main = "Total number of samples")
 pie(vecStruct, clockwise = TRUE, col = colorsStruct, radius = 0.5)
 dev.off()

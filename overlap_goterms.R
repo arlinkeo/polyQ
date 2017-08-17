@@ -1,8 +1,6 @@
 # Check for overlap in functional terms of gene sets per brain region
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-# library(WGCNA)
 library(reshape)
-# library(ggplot2)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions

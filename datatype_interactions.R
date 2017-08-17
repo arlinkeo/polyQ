@@ -6,8 +6,7 @@ setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
 options(stringsAsFactors = FALSE)
 
-load("resources/polyQ.RData")
-make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
+source("PolyQ_scripts/baseScript.R")
 
 # remove brain regions wit low number of samples
 structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ]

@@ -6,14 +6,9 @@ library(ggplot2)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
-probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
-#entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-entrezId2Name <- function (x) { row <- match(x, probeInfo$entrez_id); probeInfo[row, 4]}
-# name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
-# make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 # setOverlap <- dget("polyQ_scripts/setOverlap.R")
 # setOverlapSignif <- dget("polyQ_scripts/setOverlapSignif.R")

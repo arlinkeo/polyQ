@@ -4,13 +4,10 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 structureIDs <- rbind(c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-# make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 ### Load single correlations between polyQ genes ###
 sc_list <- lapply(structures, function(x) {

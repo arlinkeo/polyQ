@@ -4,11 +4,9 @@ library("RDAVIDWebService")
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 region.acronym <- function(x) {structureIDs[structureIDs$name %in% x, ]$acronym}
 load("resources/genesets_threshold050.RData")
 regions <- names(regionLs)

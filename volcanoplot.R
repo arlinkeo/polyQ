@@ -8,16 +8,9 @@ library(grid)
 # library(plyr)
 library(ggrepel)
 
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 load("../ABA_Rdata/BrainExpr.RData")
-donorNames <- names(brainExpr)
-names(donorNames) <- donorNames
 load("resources/diffgenesPerBrain.RData")
-
-# Mapping entrez IDs to gene symbols and vice versa
-probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) {probeInfo$gene_symbol[match(x, probeInfo$entrez_id)]} #Input is vector
-name2entrezId <- function (x) {probeInfo$entrez_id[match(x, probeInfo$gene_symbol)]} #Input is vector
 
 ### Volcano plots of diff. expr. genes
 

@@ -3,9 +3,7 @@ library(WGCNA)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-load("resources/polyQ.RData")
-probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
+source("PolyQ_scripts/baseScript.R")
 selectTop500 <- function(x) {names(head(-sort(-x), 500))} #Input is row/column of a corr. matrix
 
 #####Load Data#####

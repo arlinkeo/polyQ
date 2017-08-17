@@ -3,16 +3,12 @@ setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 #library(WGCNA)
 options(stringsAsFactors = FALSE)
 
+source("PolyQ_scripts/baseScript.R")
 load("resources/sampleIDs.RData")
-load("resources/polyQ.RData")
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(HD_region = c(NA, "HDregion", "HD_region"), structureIDs)
 sampleIDs <- sampleIDs[!names(sampleIDs) %in% c("brain", "cerebellum")]
 load("resources/brainExpr.RData")
-donorNames <- names(brainExpr)
-names(donorNames) <- donorNames
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]}
 ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
 rownames(ontology) <- ontology$id
 

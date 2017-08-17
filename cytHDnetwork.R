@@ -3,11 +3,9 @@ setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(RCy3)
 options(stringsAsFactors = FALSE)
 
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 load("regional_coexpression/HD_region/meanCor_HDnetworkBD.RData")
 load("resources/genesets_threshold050.RData")
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 
 geneSets <- regionLs$HD_region
 names(pQEntrezIDs) <- pQEntrezIDs

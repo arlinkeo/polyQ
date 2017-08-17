@@ -3,14 +3,11 @@ setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
-entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
-make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
 
 # Load data
 coexpr_dist <- lapply(structures, function(r){

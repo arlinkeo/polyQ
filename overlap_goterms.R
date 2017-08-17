@@ -1,6 +1,8 @@
 # Check for overlap in functional terms of gene sets per brain region
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
+library(reshape)
+library(ggplot2)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
@@ -10,7 +12,7 @@ structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 rownames(structureIDs) <- structureIDs$name
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
+probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
 entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
 make.italic <- function(x) {as.expression(lapply(x, function(x) bquote(italic(.(x)))))}
@@ -64,8 +66,8 @@ ll2 <- lapply(structures, function(id){
       res <- res[order(as.numeric(res$Benjamini)), ]
       res[["Term"]] <- sapply(res$Term, function(x){unlist(strsplit(x, split = "~"))[2]})
       res[["Benjamini"]] <- sapply(res$Benjamini, function(x){format(as.numeric(x), digits =2, scientific = T)})
-      # write.table(res, file = paste("regional_coexpression/", n, "/signficantTerms050_", a, "_", pq, ".txt", sep = ""), 
-      #             quote = FALSE, row.names = FALSE, sep = "\t") # file with only terms significant after multiple testing
+      write.table(res, file = paste("regional_coexpression/", n, "/signficantTerms050_", a, "_", pq, ".txt", sep = ""),
+                  quote = FALSE, row.names = FALSE, sep = "\t") # file with only terms significant after multiple testing
     }
     res
   })
@@ -77,20 +79,48 @@ table <- sapply(ll2, function(x){
     if (is.null(l)) 0 else nrow(l)
   })
 })
-
+colnames(table) <- gsub("_", " ", colnames(table))
 # Plot table with number of terms in each geneset
-pdf(file = "number_of_goterms050.pdf", 6, 6.75)
+# pdf(file = "number_of_goterms050.pdf", 6, 6.75)
+# par(mar = c(2,6,12,3));
+# labeledHeatmap(replace(table, which(table == 0), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
+#                yLabels = rownames(table), colors = blueWhiteRed(200)[100:200], 
+#                main = "Number of GO terms after multiple testing (Benjamini < 0.05)", 
+#                setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
+# dev.off()
+# #OR with ggplot2
+
+#plot
+table.numbers <- dget("polyQ_scripts/tableNumbers.R")
+
+pdf(file = "number_of_goterms050.pdf", 10, 4)
 par(mar = c(2,6,12,3));
-labeledHeatmap(replace(table, which(table == 0), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
-               yLabels = rownames(table), colors = blueWhiteRed(200)[100:200], 
-               main = "Number of GO terms after multiple testing (Benjamini < 0.05)", 
-               setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
+table.numbers(table, name = expression(atop("Enriched", "functional terms")))
 dev.off()
 
 #Number of overlapping terms for each polyQ pair
 ll3 <- lapply(ll2, function(r){sapply(r, function(s){s$Term})})
 termSetOverlap <- lapply(ll3, setOverlap)
 save(termSetOverlap, file = "resources/termSetOverlap.RData")
+load("resources/termSetOverlap.RData")
+
+#Print shared terms between pairs
+lapply(structureIDs$name, function(r){
+  sets <- termSetOverlap[[r]]
+  pairs <- names(which(sapply(sets, length) > 10)) # select significant pairs
+  sets <- sets[pairs]
+  
+  fileConn <- file("overlapTermSets_HDregion.txt")
+  comment <- ("#PolyQ pairs with >10 shared enriched terms")
+  header <- paste("PolyQ_pair", "P-value", "Overlapping_co-expressed_genes", sep = "\t")
+  printList <- lapply(pairNames, function(p){
+    set <- paste(sets[[p]], collapse = ", ")
+    paste(p, signifPairs[[p]], set, sep = "\t")
+  })
+  writeLines(c(comment, header, unlist(printList)), fileConn)
+  close(fileConn)
+  
+})
 
 # Terms shared between HTT, ATN1, and ATXN2 in all regions
 tabList <- lapply(names(ll2), function(x){

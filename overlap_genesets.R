@@ -1,13 +1,15 @@
 # Check for overlap in polyQ gene sets per region
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
+library(reshape)
+library(ggplot2)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/polyQ.RData")
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
+probeInfo <- read.csv("../ABA_human_processed/probe_info_2014-11-11.csv")
 #entrezId2Name <- function (x) { row <- which(probeInfo$entrez_id == x); probeInfo[row, 4]} #Input is single element
 entrezId2Name <- function (x) { row <- match(x, probeInfo$entrez_id); probeInfo[row, 4]}
 # name2entrezId <- function (x) { row <- which(probeInfo$gene_symbol == x); probeInfo[row, 6]} #Input is single element
@@ -33,7 +35,7 @@ load("resources/geneSetOverlapSignif.RData")
 ########################################################
 # Print shared co-expressed genes
 ube2Fam <- read.table(file = "UBE2_genefamily.txt", header = TRUE, sep = "\t")
-dnaBindGenes <- read.table(file = "dna_binding_genes.txt")[,1]
+dnaBindGenes <- read.table(file = "dna_repair_genes.txt")[,1]
 ubiqGenes <- read.table(file = "ubiquitination_genes.txt")[,1]
 
 structs <- structureIDs$name
@@ -42,40 +44,49 @@ names(structs) <- structs
 hipGene <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
     set <- regionLs[[r]][[g]]
-    set[set %in% "9026"]
+    set[set %in% "HIP1R"]
   })
 })
 hipGene <- lapply(hipGene, function(x){x[lapply(x, length)>0]})
+
+bec1Gene <- lapply(structs, function(r){
+  sapply(polyQgenes, function(g) {
+    set <- regionLs[[r]][[g]]
+    set[set %in% "BECN1"]
+  })
+})
+bec1Gene <- lapply(bec1Gene, function(x){x[lapply(x, length)>0]})
 
 dnaBGenes <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
     intersect(regionLs[[r]][[g]], dnaBindGenes)
   })
 })
+intersect(dnaBGenes$HD_region$ATN1, dnaBGenes$HD_region$ATXN2)
+intersect(dnaBGenes$frontal_lobe$ATN1, dnaBGenes$frontal_lobe$ATXN2)
+intersect(dnaBGenes$parietal_lobe$ATN1, dnaBGenes$parietal_lobe$ATXN2)
+intersect(dnaBGenes$striatum$ATN1, dnaBGenes$striatum$ATXN2)
 dnaGenesTable <- sapply(dnaBGenes, function(r){sapply(r, length)})
-dnaBGenes <- lapply(dnaBGenes, function(x){x[lapply(x, length)>0]})
-pdf(file = "dna_repair_genes.pdf", 8, 9)
-par(mar = c(2,6,12,3));
-labeledHeatmap(replace(dnaGenesTable, which(dnaGenesTable == 0), NA), xLabels = colnames(dnaGenesTable), xLabelsPosition = "top", 
-                 yLabels = make.italic(rownames(dnaGenesTable)), colors = blueWhiteRed(200)[100:200], 
-                 main = "DNA repair genes in gene sets", setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = dnaGenesTable)
-dev.off()
+colnames(dnaGenesTable) <- gsub("_", " ", colnames(dnaGenesTable))
+
 ubGenes <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
     intersect(regionLs[[r]][[g]], ubiqGenes)
   })
 })
 ubGenesTable <- sapply(ubGenes, function(r){sapply(r, length)})
-#dnaBGenes <- lapply(dnaBGenes, function(x){x[lapply(x, length)>0]})
-pdf(file = "ubiquitination_genes.pdf", 8, 9)
+
+#plot numbers
+table.numbers <- dget("polyQ_scripts/tableNumbers.R")
+
+pdf(file = "dna_repair_ubiquitination_genes.pdf", 10, 4)
 par(mar = c(2,6,12,3));
-labeledHeatmap(replace(dnaGenesTable, which(dnaGenesTable == 0), NA), xLabels = colnames(dnaGenesTable), xLabelsPosition = "top", 
-               yLabels = make.italic(rownames(dnaGenesTable)), colors = blueWhiteRed(200)[100:200], 
-               main = "Ubiquitination genes in gene sets", setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = dnaGenesTable)
+table.numbers(dnaGenesTable, name = expression(atop("Co-expressed", " DNA repair genes")))
+table.numbers(ubGenesTable, name = expression(atop("Co-expressed", " ubiquitination genes")))
 dev.off()
 
 ubGenes <- sapply(polyQgenes, function(g) {
-  set <- sapply(regionLs$HD_region[[g]], entrezId2Name)
+  set <- regionLs$HD_region[[g]]
   res1 <- c(intersect(set, ube2Fam$Approved.Symbol), intersect(set, ube2Fam$Previous.Symbols))
   res2 <- set[grep("UB", set)]
   c(res1, res2)
@@ -113,34 +124,9 @@ all <-Reduce(union, regionLs$HD_region)
 all <- sapply(all, entrezId2Name)
 all[grep("UBE2", all)]
 c(intersect(all, ube2Fam$Approved.Symbol), intersect(all, ube2Fam$Previous.Symbols))
-######################################################
-
-# Plot number of overlapping genes and its significance for gene sets with threshold > 0.5
-pdf(file = "overlap_genesets.pdf", 8, 9)
-par(mar = c(6, 10, 15, 4))
-par(mai = c(0.5, 2, 3, 0.5))
-
-overlapTable <- sapply(geneSetOverlap, function(r){sapply(r, length)})
-rowlabels <- rownames(overlapTable)
-collabels <- gsub("_", " ", colnames(overlapTable))
-labeledHeatmap((overlapTable > 0) + 0, xLabels = collabels, yLabels = rowlabels,
-               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "orange red"), plotLegend = FALSE,
-               textMatrix = overlapTable, main = "Shared co-expression")
-signifTable <- apply(geneSetOverlapSignif, c(1,2), function(x){format(x, digits = 2)})
-labeledHeatmap((geneSetOverlapSignif < 0.05) + 0, xLabels = collabels, yLabels = rowlabels,
-               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "orange red"), plotLegend = FALSE,
-               textMatrix = signifTable, main = "Significance of shared co-expression")
-stab <- geneSetOverlapSignif
-stab[!(stab < 0.05)] <- NA
-labeledHeatmap(stab, xLabels = collabels, yLabels = rowlabels,
-               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = redWhiteGreen(200)[1:100], plotLegend = TRUE,
-               textMatrix = signifTable, main = "Significance of shared co-expression")
-
-
-labeledHeatmap((geneSetOverlapSignif < 0.05) + 0, xLabels = collabels, yLabels = rowlabels,
-               setStdMargins = FALSE, xLabelsPosition = "top", xLabelsAdj = 0, colors = c("white", "orange red"), plotLegend = FALSE,
-               textMatrix = overlapTable, main = "Shared co-expression with significance highlighted")
-dev.off()
+##############################
+x <- Reduce(intersect, list(regionLs$HD_region$ATN1, regionLs$HD_region$ATXN2, regionLs$HD_region$HTT))
+x[grep("UB", x)]
 
 ##################
 #Print overlapping gene sets

@@ -4,7 +4,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 load("resources/BrainExpr.RData")
-ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
+ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
 source("PolyQ_scripts/baseScript.R")
 
 #Select anatomic region-specific samples

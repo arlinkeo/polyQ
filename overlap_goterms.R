@@ -1,8 +1,8 @@
 # Check for overlap in functional terms of gene sets per brain region
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-library(WGCNA)
+# library(WGCNA)
 library(reshape)
-library(ggplot2)
+# library(ggplot2)
 options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
@@ -76,17 +76,8 @@ table <- sapply(ll2, function(x){
   })
 })
 colnames(table) <- gsub("_", " ", colnames(table))
-# Plot table with number of terms in each geneset
-# pdf(file = "number_of_goterms050.pdf", 6, 6.75)
-# par(mar = c(2,6,12,3));
-# labeledHeatmap(replace(table, which(table == 0), NA), xLabels = gsub("_", " ", colnames(table)), xLabelsPosition = "top", 
-#                yLabels = rownames(table), colors = blueWhiteRed(200)[100:200], 
-#                main = "Number of GO terms after multiple testing (Benjamini < 0.05)", 
-#                setStdMargins = FALSE, xLabelsAdj = 0, textMatrix = table)
-# dev.off()
-# #OR with ggplot2
 
-#plot
+# Plot table with number of terms in each geneset
 table.numbers <- dget("polyQ_scripts/tableNumbers.R")
 
 pdf(file = "number_of_goterms050.pdf", 10, 4)

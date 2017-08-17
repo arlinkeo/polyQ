@@ -15,7 +15,7 @@ pQgeneInfo <- probeInfo[probeInfo$gene_symbol %in% polyQgenes, ]
 pQEntrezIDs <- as.character(pQgeneInfo[ , 6])
 polyQgenes <- pQgeneInfo[ , 4]
 
-#Cytoscape colors
+#Gephi node colors
 library(RColorBrewer)
 pQcolors <- brewer.pal(9, "Set1")
 names(pQcolors) <- polyQgenes

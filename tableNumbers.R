@@ -1,4 +1,7 @@
-# Function to plot table with numbers of co-expressed genes
+# Plot heatmap table for polyQ genes and brain structures
+
+library(ggplot2)
+
 tableNumbers <- function(tab, name, title = ""){
   
   tab.m <- melt(tab)

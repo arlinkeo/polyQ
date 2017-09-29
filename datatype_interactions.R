@@ -2,14 +2,9 @@
 # Associations from literature: Montcel (2014), Chen (2016), Raposo (2015), Stuitje (2015)
 # Co-expression values between polyQ modules with top 25 genes
 
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
-options(stringsAsFactors = FALSE)
 
 source("PolyQ_scripts/baseScript.R")
-
-# remove brain regions wit low number of samples
-structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellar nuclei","basal forebrain","globus pallidus"), ]
 
 #Load interaction info from literature
 genotype_pairs <- read.csv("datatype_interactions.txt", sep = "\t", row.names = 1, comment.char = "#")

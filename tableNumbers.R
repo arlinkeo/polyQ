@@ -1,5 +1,5 @@
 # Plot heatmap table for polyQ genes and brain structures
-
+library(reshape)
 library(ggplot2)
 
 tableNumbers <- function(tab, name, title = ""){

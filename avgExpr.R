@@ -1,27 +1,49 @@
 #Average expression of polyQ gene across regional-specific samples and all donors
 
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-options(stringsAsFactors = FALSE)
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
+
 library(RColorBrewer)
 load("resources/BrainExpr.RData")
 load("resources/sampleIDs.RData")
 sampleIDs$brain <- NULL
 sampleIDs$cerebellum <- NULL
-source("PolyQ_scripts/baseScript.R")
+table.numbers <- dget("polyQ_scripts/tableNumbers.R")
 
-#Average expression of a polyQ gene in a structure across donors and samples.
-avgExpr <- sapply(sampleIDs, function(s){
-  res <- sapply(donorNames, function(d){
+#mean/variance/median of a polyQ gene in a structure across donors and samples.
+funs <- list(mean = mean, var = var, median = median)
+fTabs <- lapply(sampleIDs, function(s){
+  res <- lapply(donorNames, function(d){
     expr <- brainExpr[[d]]
     expr2 <- expr[pQEntrezIDs, as.logical(s[[d]])]
-    apply(expr2, 1, mean) # Avg across region-specific samples per PQ per donor
+    sapply(funs, function(f) apply(expr2, 1, f))# calculate functions across region-specific samples per PQ per donor
   })
-  apply(res, 1, mean) # Avg across region-specific samples and donors per PQ
+  apply(simplify2array(res), 1:2, mean) # Avg across region-specific samples and donors per PQ
 })
+
+#variance expression
+varExpr <- sapply(fTabs, function(t)t[, "var"])
+rownames(varExpr) <- sapply(rownames(varExpr), entrezId2Name)
+#Median expression
+medExpr <- sapply(fTabs, function(t)t[, "median"])
+rownames(medExpr) <- sapply(rownames(medExpr), entrezId2Name)
+#avgExpr
+avgExpr <- sapply(fTabs, function(t)t[, "mean"])
 rownames(avgExpr) <- sapply(rownames(avgExpr), entrezId2Name)
 save(avgExpr, file = "resources/avgExpr.RData")
 load("resources/avgExpr.RData")
 
+#Variance across anatomical structures
+varAS <- apply(avgExpr, 1, var)
+
+#Print number tables
+pdf(file = "expr_meanvarmedian.pdf", 10, 4)
+par(mar = c(2, 10, 15, 4))
+table.numbers(round(avgExpr, digits = 2), name = expression(atop("Mean", "expression")))
+table.numbers(round(varExpr, digits = 2), name = expression(atop("Expression", "variance")))
+table.numbers(round(medExpr, digits = 2), name = expression(atop("Median", "expression")))
+dev.off()
+
+#Avg Expression color map
 pal <- colorRampPalette(rev(brewer.pal(3, "RdBu")))# pal = colorRampPalette(c('darkgreen', 'yellow', 'red'))
 avgExprColor <- matrix(pal(100)[as.numeric(cut(avgExpr, breaks = 100))], length(polyQgenes), ncol(avgExpr))
 rownames(avgExprColor) <- rownames(avgExpr)

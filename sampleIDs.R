@@ -1,11 +1,9 @@
 ##### Obtain binary vectors indicating presence of sample across regions and donors #####
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-options(stringsAsFactors = FALSE)
+
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 
 #Prepare data and functions
 load("resources/BrainExpr.RData")
-ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-source("PolyQ_scripts/baseScript.R")
 
 #Select anatomic region-specific samples
 sampleIDs <- apply(structureIDs, 1, function(id){

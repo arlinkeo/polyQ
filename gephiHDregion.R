@@ -1,20 +1,15 @@
 # Plot co-expressed genes in HD-associated region
 # setwd("/tudelft.net/staff-bulk/ewi/insy/DBL/Arlin/polyQgenes")
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library("rgexf")
-options(stringsAsFactors = FALSE)
 
 # load("polyQ.RData")
 # load("regional_coexpression/HD_region/meanCor_HDnetworkBD.RData")
 # load("genesets_threshold050.RData")
 # probeInfo <- read.csv("/tudelft.net/staff-bulk/ewi/insy/DBL/sjoerdhuisman/ABA_human_brain_probegene/probe_info_2014-11-11.csv")
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 # load("regional_coexpression/HD_region/meanCor_HDnetworkBD.RData")
-load("regional_coexpression/frontal_lobe/meanCor_FL.RData")
 load("resources/genesets_threshold050.RData")
-probeInfo <- read.csv("ABA_human_processed/probe_info_2014-11-11.csv")
 probeInfo[grep("TMEM189-UBE2V1", probeInfo$gene_name), 4] <- "TMEM189-UBE2V1" # change its gene symbol TMEM189 to TMEM189-UBE2V1, otherwise there are non-unique gene symbols
-entrezId2Name <- function (x) { row <- match(x, probeInfo$entrez_id); probeInfo[row, 4]} #Input is single element
 
 names(pQEntrezIDs) <- pQEntrezIDs
 names(pQcolors) <- pQEntrezIDs

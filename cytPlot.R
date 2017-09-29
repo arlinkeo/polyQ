@@ -4,7 +4,7 @@ library(RCy3)
 library(reshape2)
 options(stringsAsFactors = FALSE)
 
-load("resources/polyQ.RData")
+source("PolyQ_scripts/baseScript.R")
 load("resources/avgExpr.RData")
 load("resources/avgExprColor.RData")
 

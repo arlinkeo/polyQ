@@ -1,12 +1,10 @@
 # Check for overlap in polyQ gene sets per region
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 library(WGCNA)
 library(reshape)
 library(ggplot2)
-options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-source("PolyQ_scripts/baseScript.R")
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 

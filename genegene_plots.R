@@ -1,11 +1,8 @@
 # Gene-gene expression scatterplots for all polyQ pairs across all donors.
 
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 library(WGCNA)
-options(stringsAsFactors = FALSE)
 
-load("resources/polyQ.RData")
-ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 rownames(ontology) <- ontology$id
 load("resources/polyQ_expr.RData")
 
@@ -25,7 +22,7 @@ lapply(names(donorList2), function(d){
     if (nchar(clr) == 5) {paste("#0", clr, sep = "")}
     else {paste("#", clr, sep = "")}
   })
-  png(file = paste("genegene_plots_d", d, ".png", sep = ""), width = 1920, height = 1920, res = 300, pointsize = 4)
+  png(file = paste("genegene_plots/genegene_plots_d", d, ".png", sep = ""), width = 1920, height = 1920, res = 300, pointsize = 4)
   par(mfrow=c(6,6))
   apply(genepairs, 1, function(x){
     gene1 <- expr[x[1], ]

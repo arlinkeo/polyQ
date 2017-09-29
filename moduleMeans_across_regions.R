@@ -1,10 +1,8 @@
 #Networks of module means in different regions to Cytoscape.
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-library(WGCNA)
-options(stringsAsFactors = FALSE)
 
-load("resources/polyQ.RData")
-ontology <- read.csv("ABA_human_processed/Ontology_edited.csv")
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
+
+library(WGCNA)
 
 ###Cytoscape circular plots###
 id <- ontology[ontology$name %in% "parietal lobe", ][ , c(1:3)]

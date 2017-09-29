@@ -1,10 +1,10 @@
 # Check for overlap in functional terms of gene sets per brain region
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
+
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
+
 library(reshape)
-options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-source("PolyQ_scripts/baseScript.R")
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 rownames(structureIDs) <- structureIDs$name

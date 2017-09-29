@@ -1,10 +1,8 @@
 # Get GO terms for gene sets per brain region
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 library("RDAVIDWebService")
-options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
-source("PolyQ_scripts/baseScript.R")
 structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 region.acronym <- function(x) {structureIDs[structureIDs$name %in% x, ]$acronym}

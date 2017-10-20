@@ -10,14 +10,14 @@ structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 
 # Load data
-coexpr_dist <- lapply(structures, function(r){
-  fName <- paste("regional_coexpression/", r[3], "/meanCor_", r[2], ".RData", sep = "")
-  attach(fName)
-  mat <- meanCor[pQEntrezIDs, ]
-  detach(2)
-  mat
-})
-save(coexpr_dist, file = "resources/coexpr_dist.RData")
+# coexpr_dist <- lapply(structures, function(r){
+#   fName <- paste("regional_coexpression/", r[3], "/meanCor_", r[2], ".RData", sep = "")
+#   attach(fName)
+#   mat <- meanCor[pQEntrezIDs, ]
+#   detach(2)
+#   mat
+# })
+# save(coexpr_dist, file = "resources/coexpr_dist.RData")
 load("resources/coexpr_dist.RData")
 
 # Plot co-expression distribution

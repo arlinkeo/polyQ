@@ -85,7 +85,7 @@ apply(structureIDs, 1, function(id){
   # saveImage(cw, svgName, "svg")
 })
 
-# Load new session
+# Load new cytoscape session
 
 # Gene set overlap info
 load("resources/geneSetOverlap.RData")
@@ -125,6 +125,8 @@ interaction_list <- apply(structureIDs, 1, function(id){
   deleteSelectedEdges(cw)
   setEdgeLineWidthDirect(cw, edges, edgeTable$width[edgeRows])
 })
+
+# Load new cytoscape session
 
 # Term set overlap info
 load("resources/termSetOverlap.RData")

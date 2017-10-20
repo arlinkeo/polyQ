@@ -95,4 +95,4 @@ polyQ_gene <- as.integer(nodes$id %in% pQEntrezIDs)
 
 write.gexf(nodes = nodes, edges = edges[, c("source", "target")], edgesWeight = edges[, c("coexpr")], edgesVizAtt = edgeViz, 
            edgesAtt = as.data.frame(edges[, c("coexpr")]), nodesVizAtt = nodeViz, nodesAtt = cbind(polyQ_gene, membership),
-           defaultedgetype = "undirected", output = "Images/HDregion_network/FLTest.gexf")
+           defaultedgetype = "undirected", output = "Images/HDregion_network/HDregion.gexf")

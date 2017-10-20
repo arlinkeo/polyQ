@@ -1,4 +1,7 @@
 #Plotting region-specific networks
+# for each polyQ the top 25 correlated genes are selected to form modules
+# the correlations (26*26) is averaged indicating correlation between two groups of genes
+
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression/regional_coexpression/")
 library(WGCNA) # for heatmap function
 options(stringsAsFactors = FALSE)

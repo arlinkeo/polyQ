@@ -81,10 +81,10 @@ diffDown <- sapply(diffgenesPerBrain, function(b){
 # select significant
 allUp <- apply(diffUp, 1, function(g) {sum(g < 0.025) >= 5})# significant in 5 out of 6 brains
 upGenes <- names(allUp)[allUp]
-#sapply(upGenes, entrezId2Name)
+sapply(upGenes, entrezId2Name)
 allDown <- apply(diffDown, 1, function(g) {sum(g < 0.025) >= 5})
 downGenes <- names(allDown)[allDown]
-#sapply(downGenes, entrezId2Name)
+sapply(downGenes, entrezId2Name)
 
 #Diff. expressed polyQ genes
 upGenes[which(upGenes %in% pQEntrezIDs)]

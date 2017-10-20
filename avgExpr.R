@@ -10,7 +10,7 @@ sampleIDs$cerebellum <- NULL
 table.numbers <- dget("polyQ_scripts/tableNumbers.R")
 
 #mean/variance/median of a polyQ gene in a structure across donors and samples.
-funs <- list(mean = mean, var = var, median = median)
+funs <- list(mean = mean, var = var, median = median) # list of functions to apply
 fTabs <- lapply(sampleIDs, function(s){
   res <- lapply(donorNames, function(d){
     expr <- brainExpr[[d]]
@@ -29,7 +29,7 @@ rownames(medExpr) <- sapply(rownames(medExpr), entrezId2Name)
 #avgExpr
 avgExpr <- sapply(fTabs, function(t)t[, "mean"])
 rownames(avgExpr) <- sapply(rownames(avgExpr), entrezId2Name)
-save(avgExpr, file = "resources/avgExpr.RData")
+save(avgExpr, varExpr, medExpr, file = "resources/avgExpr.RData")
 load("resources/avgExpr.RData")
 
 #Variance across anatomical structures
@@ -38,6 +38,9 @@ varAS <- apply(avgExpr, 1, var)
 #Print number tables
 pdf(file = "expr_meanvarmedian.pdf", 10, 4)
 par(mar = c(2, 10, 15, 4))
+colnames(avgExpr) <- gsub("_", " ", colnames(avgExpr))
+colnames(varExpr) <- gsub("_", " ", colnames(varExpr))
+colnames(medExpr) <- gsub("_", " ", colnames(medExpr))
 table.numbers(round(avgExpr, digits = 2), name = expression(atop("Mean", "expression")))
 table.numbers(round(varExpr, digits = 2), name = expression(atop("Expression", "variance")))
 table.numbers(round(medExpr, digits = 2), name = expression(atop("Median", "expression")))

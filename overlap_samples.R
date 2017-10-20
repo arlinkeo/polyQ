@@ -1,4 +1,4 @@
-# Number samples of atomic structures that fall within the HD associated regions (Coppen2016)
+# Number of samples of atomic structures that fall within the HD associated region (Coppen2016)
 
 source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 
@@ -14,18 +14,22 @@ overlap <- lapply(sampleIDs, function(s){
   })
 })
 tab <- sapply(overlap, function(d){sapply(d, sum)})
+tab
 totalN <- apply(tab, 2, sum)
-# 
+totalN
+
 # Total samples in and out HD region
-totalHD <- sum(sapply(sampleIDs_HD, sum))
+totalHD <- sum(sapply(sampleIDs_HD, sum)) # total number of samples in HD-associated region
 idHD <- unlist(sampleIDs_HD)
 notHD <- as.numeric(!idHD)
 
+# Total samples in anatomical regions
 allStruct <- lapply(sampleIDs, unlist)
 allStruct <-Reduce(bitwOr, allStruct)
 nonStruct <- as.numeric(!allStruct)
-restRest <- bitwAnd(nonStruct, notHD)
+restRest <- bitwAnd(nonStruct, notHD) # Samples not in anatomical structure and not in HD-associated region
 
+# For each anatomical region, number of samples in- and outside HD-associated region
 colHD <- lapply(names(sampleIDs), function(n){
   s <- sampleIDs[[n]]
   inHD <- sum(bitwAnd(unlist(s), idHD))
@@ -41,8 +45,9 @@ tab <- as.data.frame(tab)
 colnames(tab) <- c("HD", "structure", "samples")
 tab[nrow(tab)+1, ] <- c("rest", "rest", sum(restRest))
 tab$samples <- as.numeric(tab$samples)
+tab
 
-# Number of samples in Hd region minus structure, should add up to total number samples in structures
+# Number of samples in Hd region minus structure, should add up to total number samples in HD-region
 diffHD <- lapply(sampleIDs, function(s){
   lapply(donorNames, function(d){
     overlapping <- bitwAnd(s[[d]], sampleIDs_HD[[d]])
@@ -50,17 +55,3 @@ diffHD <- lapply(sampleIDs, function(s){
   })
 })
 sapply(diffHD, function(d){sapply(d, sum)})
-#
-apply(structureIDs, 1, function(r){
-  structure <- r$acronym
-  structName <- r$name
-  overlapSamples <- overlap[[structName]]
-  diffHDsamples <- diffHD[[structName]]
-
-  brainCorList <- lapply(donorNames, function(d){
-    expr <- brainExpr[[d]][, overlapSamples[[d]]]
-    corMat <- cor(t(expr))
-    diag(corMat) <- 0
-    corMat
-  })
-})

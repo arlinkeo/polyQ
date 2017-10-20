@@ -1,15 +1,15 @@
 #Plotting region-specific networks
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression/regional_coexpression/")
-library(WGCNA)
+library(WGCNA) # for heatmap function
 options(stringsAsFactors = FALSE)
 
 load("../resources/polyQ.RData")
 ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-id <- ontology[ontology$name %in% "brain", ][ , c(1:3)]
+id <- ontology[ontology$name %in% "brain", ][ , c(1:3)] # change name for each region to be analyzed
 #id <- c(0, "HDregion", "../HD_masks_Coppen2016")
-load(paste(gsub(" ", "_", id[3]), "/subsetCor_", id[2], ".RData", sep = ""))
+load(paste(gsub(" ", "_", id[3]), "/subsetCor_", id[2], ".RData", sep = "")) # subset of top 25 correlated genes
 
-#Heatmap of modules averaged
+#Heatmap of modules averaged across top 25 top correlated genes
 modules <- rep(polyQgenes, each = 26)
 moduleMat <- subsetCor
 rownames(moduleMat) <- modules

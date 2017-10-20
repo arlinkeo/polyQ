@@ -159,38 +159,3 @@ interaction_list2 <- apply(structureIDs, 1, function(id){
   deleteSelectedEdges(cw)
   setEdgeLineWidthDirect(cw, edges, edgeTable$width[edgeRows])
 })
-# 
-# #Plot mean coexpression between top 25 gene sets
-# apply(structureIDs, 1, function(id){
-#   id <- unlist(id)
-#   structName <- id[2]
-#   structure <- id[3]
-#   file <- paste("regional_coexpression/", structure, "/moduleMeans_", structName, ".RData", sep = "")
-#   attach(file)
-#   mat <- moduleMeans[pqOrder, pqOrder] # adjacency matrix
-#   detach(2)
-#   diag(mat) <- 0
-#   mat[lower.tri(mat)] <- 0
-#   edgeTable <- as.data.frame(as.table(mat))
-#   colnames(edgeTable) <- c("fromNode", "toNode", "coexpr")
-#   edgeTable$edgeType <- rep("coexpr", dim(edgeTable)[1])
-#   edgeTable$width <- sapply(edgeTable$coexpr, linMap)
-#   nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = avgExprColor[, structure])
-#   # nodeTable  <- data.frame(nodeName = polyQgenes, expr = avgExpr[, structure], color = pQcolors)
-#   
-#   g <- cyPlot(nodeTable, edgeTable)
-#   windowName <- paste("meanCoexpr_",structName, sep = "")
-#   cw <- CytoscapeWindow(windowName, graph = g, overwrite = TRUE)
-#   displayGraph (cw)
-#   cyt.visuals(cw)
-#   setNodeColorDirect(cw,  nodeTable[ , "nodeName"],  nodeTable[ , "color"])
-#   edgeRows <- which(edgeTable$coexpr > 0.5)
-#   edges <- apply(edgeTable[edgeRows, ], 1, function(e){paste(e[1], e[2], sep = " (coexpr) ")})
-#   nonEdges <- apply(edgeTable[-edgeRows, ], 1, function(e){paste(e[1], e[2], sep = " (coexpr) ")})
-#   selectEdges(cw, nonEdges)
-#   deleteSelectedEdges(cw)
-#   setEdgeLineWidthDirect(cw, edges, edgeTable$width[edgeRows])
-#   #setEdgeColorDirect(cw, apply(edgeTable, 1, function(x){paste(x[1], x[2], sep = " (coexpr) ")}), edgeTable$color)
-#   # svgName <- paste("regional_coexpression/", structure, "/", windowName, ".svg", sep = "")
-#   # saveImage(cw, svgName, "svg")
-# })

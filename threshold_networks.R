@@ -1,10 +1,6 @@
 # select correlated genes based on a corr. threshold
 
 setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-library(WGCNA)
-library(reshape)
-library(ggplot2)
-options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 source("PolyQ_scripts/baseScript.R")
@@ -15,18 +11,18 @@ structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureID
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 
-# for(i in seq(0.4, 0.6, by = 0.1)){
-#   regionLs <- lapply(structures, function(x) {
-#     f <- paste("regional_coexpression/", x[3], "/meanCor_", x[2], ".RData", sep = "")
-#     print(f)
-#     attach(f)
-#     selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > i)))})
-#     names(selection) <- pQEntrezIDs
-#     detach(2)
-#     selection
-#   })
-#   save(regionLs, file = paste("resources/genesets_threshold0", i*10,"0.RData", sep = ""))
-# }
+lapply(c(4:6), function(i){
+  regionLs <- lapply(structures, function(x) {
+    f <- paste("regional_coexpression/", x[3], "/meanCor_", x[2], ".RData", sep = "")
+    print(f)
+    attach(f)
+    selection <- lapply(pQEntrezIDs, function(x){c(x, names(which(meanCor[x,] > i)))})
+    names(selection) <- pQEntrezIDs
+    detach(2)
+    selection
+  })
+ save(regionLs, file = paste("resources/genesets_threshold0", i*10,"0.RData", sep = ""))
+})
 
 #Sort and plot table
 colorder <- c("HD_region", "frontal_lobe", "parietal_lobe", "striatum", "hypothalamus", "mesencephalon", "cerebellar_cortex", "pons")

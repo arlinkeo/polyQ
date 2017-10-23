@@ -31,7 +31,7 @@ termTab.m$X1 <- factor(termTab.m$X1, levels = rev(rownames(termTab))) # keep ord
 atLeast10 <- termTab.m$value >= 10
 termTabFace <- ifelse(atLeast10, "bold", "plain")
 
-pdf(file = "overlap_tables.pdf", 10, 9)
+pdf(file = "overlap_tables.pdf", 10, 9) # (manuscript, Figure 4)
 par(mar = c(6, 10, 15, 4))
 
 #Plot overlap of shared co-expressed genes (p< 0.05)

@@ -6,7 +6,6 @@ library(RColorBrewer)
 load("resources/BrainExpr.RData")
 load("resources/sampleIDs.RData")
 sampleIDs$brain <- NULL
-sampleIDs$cerebellum <- NULL
 table.numbers <- dget("polyQ_scripts/tableNumbers.R")
 
 #mean/variance/median of a polyQ gene in a structure across donors and samples.

@@ -3,7 +3,7 @@ source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 library("RDAVIDWebService")
 
 #Prepare data and functions
-structureIDs <- structureIDs[!structureIDs$name %in% c("cerebellum"), ]
+structureIDs <- structureIDs[!structureIDs$name %in% c("brain"), ]
 structureIDs <- rbind(structureIDs, c(NA, "HDregion", "HD_region"))
 region.acronym <- function(x) {structureIDs[structureIDs$name %in% x, ]$acronym}
 load("resources/genesets_threshold050.RData")

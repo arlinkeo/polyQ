@@ -1,11 +1,7 @@
 # pie chart of number of samples
 ##### Obtain binary vectors indicating presence of sample across regions and donors #####
-setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
-options(stringsAsFactors = FALSE)
-
+source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 load("resources/sampleIDs.RData")
-sampleIDs["cerebellum"] <- NULL
-ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
 
 # Count number of samples within each brain region and donor
 nSamples <- sapply(sampleIDs, function(r){

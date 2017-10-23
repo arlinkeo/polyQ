@@ -8,7 +8,7 @@ library("RDAVIDWebService")
 source("PolyQ_scripts/baseScript.R")
 load("../ABA_Rdata/BrainExpr.RData")
 load("resources/sampleIDs.RData")
-sampleIDs <- sampleIDs[!names(sampleIDs) %in% c("brain", "cerebellum")]
+sampleIDs <- sampleIDs[!names(sampleIDs) %in% c("brain")]
 inHDregion <- sampleIDs[["HD_region"]] # Binary vector for each donor
 
 diffgenesPerBrain <- lapply(donorNames, function(b){

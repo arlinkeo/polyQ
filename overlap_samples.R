@@ -5,7 +5,7 @@ source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 load("resources/brainExpr.RData") 
 load("resources/sampleIDs.RData")
 sampleIDs_HD <- sampleIDs[["HD_region"]]
-sampleIDs <- sampleIDs[!names(sampleIDs) %in% c("HD_region", "brain", "cerebellum")]
+sampleIDs <- sampleIDs[!names(sampleIDs) %in% c("HD_region", "brain")]
 
 # Number of samples in atomic structures and HD regions
 overlap <- lapply(sampleIDs, function(s){

@@ -5,7 +5,7 @@ source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 # library(reshape)
 
 #Prepare data and functions
-structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
+structureIDs <- structureIDs[!structureIDs$name %in% c("brain"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 rownames(structureIDs) <- structureIDs$name
 structures <- split(structureIDs, seq(nrow(structureIDs)))

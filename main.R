@@ -52,6 +52,16 @@ source("threshold_networks.R")
 # Genes are also selectes when >0.4 or >0.6 to compare results.
 # The number of genes based on each threshold is shown as a heatmap in "regionLs_threshold.pdf"
 
+# Enrichment of GO terms for each set of genes that co-express with a polyQ gene in each region
+source("goterms.R")
+
+# Overlap of co-expressed genes between two polyQ genes
+
+
+# Overlap of functional terms between genes co-expressed with polyQ genes
+
+
+
 # Plot circular graphs of polyQ genes in Cytoscape, interactively
 # source("cytPlot.R")
 
@@ -63,3 +73,5 @@ source("threshold_networks.R")
 ##### Function files #####
 # tableNumbers.R
 # volcanoplot.R
+# setOverlap.R
+# setOverlapSignif.R

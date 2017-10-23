@@ -1,0 +1,42 @@
+HGNC ID	Approved Symbol	Approved Name	Status	Previous Symbols	Synonyms	Chromosome	Accession Numbers	RefSeq IDs	Gene Family Tag	Gene family description	Gene family ID
+31710	UBE2NL	ubiquitin conjugating enzyme E2 N like (gene/pseudogene)	Approved			Xq27.3		NM_001012989	UBE2	Ubiquitin conjugating enzymes E2	102
+15698	UBE2Q1	ubiquitin conjugating enzyme E2 Q1	Approved	UBE2Q	PRO3094, NICE-5	1q21.3	AJ243666	NM_017582	UBE2	Ubiquitin conjugating enzymes E2	102
+19248	UBE2Q2	ubiquitin conjugating enzyme E2 Q2	Approved		DKFZp762C143	15q24.2	BC017708	NM_173469	UBE2	Ubiquitin conjugating enzymes E2	102
+19907	UBE2R2	ubiquitin conjugating enzyme E2 R2	Approved		UBC3B, CDC34B, FLJ20419, MGC10481	9p13.3	AK000426	NM_017811	UBE2	Ubiquitin conjugating enzymes E2	102
+17895	UBE2S	ubiquitin conjugating enzyme E2 S	Approved		E2-EPF	19q13.43	BC004236	NM_014501	UBE2	Ubiquitin conjugating enzymes E2	102
+25009	UBE2T	ubiquitin conjugating enzyme E2 T	Approved		HSPC150, FANCT	1q32.1	AF161499	NM_014176	UBE2	Ubiquitin conjugating enzymes E2	102
+28559	UBE2U	ubiquitin conjugating enzyme E2 U (putative)	Approved		MGC35130	1p31.3	BC029895	NM_152489	UBE2	Ubiquitin conjugating enzymes E2	102
+12494	UBE2V1	ubiquitin conjugating enzyme E2 V1	Approved	UBE2V	UEV-1, CROC-1, UEV1A, CROC1	20q13.13	U39360	NM_021988	UBE2	Ubiquitin conjugating enzymes E2	102
+12495	UBE2V2	ubiquitin conjugating enzyme E2 V2	Approved		UEV-2, DDVit-1, EDPF-1, MMS2, UEV2, EDPF1, DDVIT1, EDAF-1	8q11.21	X98091	NM_003350	UBE2	Ubiquitin conjugating enzymes E2	102
+25616	UBE2W	ubiquitin conjugating enzyme E2 W	Approved		FLJ11011, UBC-16	8q21.11	AK001873	NM_001001481	UBE2	Ubiquitin conjugating enzymes E2	102
+25847	UBE2Z	ubiquitin conjugating enzyme E2 Z	Approved		FLJ13855, USE1	17q21.32	BC015890	NM_023079	UBE2	Ubiquitin conjugating enzymes E2	102
+16710	AKTIP	AKT interacting protein	Approved	FTS	FLJ13258	16q12.2	AK023320	NM_022476	UBE2	Ubiquitin conjugating enzymes E2	102
+13516	BIRC6	baculoviral IAP repeat containing 6	Approved		BRUCE	2p22.3	AF265555	NM_016252	UBE2	Ubiquitin conjugating enzymes E2	102
+1734	CDC34	cell division cycle 34	Approved		E2-CDC34, UBE2R1, UBC3	19p13.3	L22005	NM_004359	UBE2	Ubiquitin conjugating enzymes E2	102
+12472	UBE2A	ubiquitin conjugating enzyme E2 A	Approved		UBC2, HHR6A, RAD6A	Xq24	AK223045	NM_003336	UBE2	Ubiquitin conjugating enzymes E2	102
+12473	UBE2B	ubiquitin conjugating enzyme E2 B	Approved		UBC2, HHR6B, RAD6B	5q31.1	M74525	NM_003337	UBE2	Ubiquitin conjugating enzymes E2	102
+15937	UBE2C	ubiquitin conjugating enzyme E2 C	Approved		UBCH10	20q13.12	U73379	NM_007019	UBE2	Ubiquitin conjugating enzymes E2	102
+12474	UBE2D1	ubiquitin conjugating enzyme E2 D1	Approved	SFT	UbcH5A, UBCH5, UBC4/5, E2(17)KB1	10q21.1	BC015997	NM_003338	UBE2	Ubiquitin conjugating enzymes E2	102
+12475	UBE2D2	ubiquitin conjugating enzyme E2 D2	Approved		UbcH5B, UBC4	5q31.2	L40146	NM_181838	UBE2	Ubiquitin conjugating enzymes E2	102
+12476	UBE2D3	ubiquitin conjugating enzyme E2 D3	Approved		UbcH5C	4q24	U39318	NM_181893	UBE2	Ubiquitin conjugating enzymes E2	102
+21647	UBE2D4	ubiquitin conjugating enzyme E2 D4 (putative)	Approved		HBUCE1	7p13	BC004104	NM_015983	UBE2	Ubiquitin conjugating enzymes E2	102
+12477	UBE2E1	ubiquitin conjugating enzyme E2 E1	Approved		UbcH6	3p24.2	X92963	NM_003341	UBE2	Ubiquitin conjugating enzymes E2	102
+12478	UBE2E2	ubiquitin conjugating enzyme E2 E2	Approved		UbcH8, FLJ25157	3p24.3	AK057886	NM_152653	UBE2	Ubiquitin conjugating enzymes E2	102
+12479	UBE2E3	ubiquitin conjugating enzyme E2 E3	Approved		UbcH9	2q31.3	AB017644	NM_006357	UBE2	Ubiquitin conjugating enzymes E2	102
+32199	UBE2E4P	ubiquitin conjugating enzyme E2 E4 pseudogene	Approved		UbcM2	Xp22.2	AF136176	NG_004721	UBE2	Ubiquitin conjugating enzymes E2	102
+12480	UBE2F	ubiquitin conjugating enzyme E2 F (putative)	Approved		NCE2	2q37.3	BC010549	NM_080678	UBE2	Ubiquitin conjugating enzymes E2	102
+12482	UBE2G1	ubiquitin conjugating enzyme E2 G1	Approved	UBE2G	UBC7	17p13.2	BC026288	NM_003342	UBE2	Ubiquitin conjugating enzymes E2	102
+12483	UBE2G2	ubiquitin conjugating enzyme E2 G2	Approved		UBC7	21q22.3	BC008351	NM_182688	UBE2	Ubiquitin conjugating enzymes E2	102
+12484	UBE2H	ubiquitin conjugating enzyme E2 H	Approved		UBCH, UBC8, GID3	7q32.2	BC006277	NM_003344	UBE2	Ubiquitin conjugating enzymes E2	102
+12485	UBE2I	ubiquitin conjugating enzyme E2 I	Approved		UBC9	16p13.3	D45050	NM_003345	UBE2	Ubiquitin conjugating enzymes E2	102
+17598	UBE2J1	ubiquitin conjugating enzyme E2 J1	Approved		HSPC153, CGI-76, NCUBE1, UBC6	6q15	AJ245898	NM_016021	UBE2	Ubiquitin conjugating enzymes E2	102
+19268	UBE2J2	ubiquitin conjugating enzyme E2 J2	Approved		Ubc6p, NCUBE2	1p36.33	AF296658	NM_058167	UBE2	Ubiquitin conjugating enzymes E2	102
+4914	UBE2K	ubiquitin conjugating enzyme E2 K	Approved	HIP2	HYPG, UBC1	4p14	U58522	NM_005339	UBE2	Ubiquitin conjugating enzymes E2	102
+12486	UBE2L1	ubiquitin conjugating enzyme E2 L1 (pseudogene)	Approved	UBE2L7P, UBE2L7	UBEL1, L-UBC, UBCH7N3	14q22.3		NG_002490	UBE2	Ubiquitin conjugating enzymes E2	102
+12487	UBE2L2	ubiquitin conjugating enzyme E2 L2 (pseudogene)	Approved			12p12.2			UBE2	Ubiquitin conjugating enzymes E2	102
+12488	UBE2L3	ubiquitin conjugating enzyme E2 L3	Approved		UBCH7	22q11.21	AJ000519	NM_198157	UBE2	Ubiquitin conjugating enzymes E2	102
+12489	UBE2L4	ubiquitin conjugating enzyme E2 L4 (pseudogene)	Approved			19p13.2	Y09515	NG_001209	UBE2	Ubiquitin conjugating enzymes E2	102
+13477	UBE2L5P	ubiquitin conjugating enzyme E2 L5, pseudogene	Approved	UBE2L5		13q12.3	AL161893	NG_001319	UBE2	Ubiquitin conjugating enzymes E2	102
+12490	UBE2L6	ubiquitin conjugating enzyme E2 L6	Approved		UBCH8	11q12.1	AF031141, AK093462, BC032491	NM_004223	UBE2	Ubiquitin conjugating enzymes E2	102
+12491	UBE2M	ubiquitin conjugating enzyme E2 M	Approved		hUbc12, UBC12	19q13.43	AB012191	NM_003969	UBE2	Ubiquitin conjugating enzymes E2	102
+12492	UBE2N	ubiquitin conjugating enzyme E2 N	Approved		UbcH-ben, UBC13, MGC8489	12q22	D83004	NM_003348	UBE2	Ubiquitin conjugating enzymes E2	102

@@ -1,15 +1,12 @@
 # Check for overlap in polyQ gene sets per region
 source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
-library(WGCNA)
-library(reshape)
-library(ggplot2)
 
 #Prepare data and functions
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 
-# setOverlap <- dget("polyQ_scripts/setOverlap.R")
-# setOverlapSignif <- dget("polyQ_scripts/setOverlapSignif.R")
+setOverlap <- dget("polyQ_scripts/setOverlap.R")
+setOverlapSignif <- dget("polyQ_scripts/setOverlapSignif.R")
 
 load("resources/genesets_threshold050.RData")
 regionLs <- lapply(regionLs, function(s){
@@ -18,30 +15,24 @@ regionLs <- lapply(regionLs, function(s){
   s
 })
 
-# geneSetOverlap <- lapply(regionLs, setOverlap)
-# geneSetOverlapSignif <- sapply(regionLs, function(r){setOverlapSignif(r, total = 19992)})
-# save(geneSetOverlap, file = "resources/geneSetOverlap.RData")
-# save(geneSetOverlapSignif, file = "resources/geneSetOverlapSignif.RData")
-load("resources/geneSetOverlap.RData")
-load("resources/geneSetOverlapSignif.RData")
+geneSetOverlap <- lapply(regionLs, setOverlap)
+geneSetOverlapSignif <- sapply(regionLs, function(r){setOverlapSignif(r, total = 19992)})
+save(geneSetOverlap, file = "resources/geneSetOverlap.RData")
+save(geneSetOverlapSignif, file = "resources/geneSetOverlapSignif.RData")
+# load("resources/geneSetOverlap.RData")
+# load("resources/geneSetOverlapSignif.RData")
 
 ########################################################
 # Print shared co-expressed genes
-ube2Fam <- read.table(file = "UBE2_genefamily.txt", header = TRUE, sep = "\t")
-dnaBindGenes <- read.table(file = "dna_repair_genes.txt")[,1]
-ubiqGenes <- read.table(file = "ubiquitination_genes.txt")[,1]
+resources <- "PolyQ_scripts/resources/"
+ube2Fam <- read.table(file = paste0(resources, "UBE2_genefamily.txt"), header = TRUE, sep = "\t") # HUGO nomenclature
+dnaBindGenes <- read.table(file = paste0(resources, "dna_repair_genes.txt"))[,1] # MSigDB
+ubiqGenes <- read.table(file = paste0(resources, "ubiquitination_genes.txt"))[,1] # MSigDB
 
 structs <- structureIDs$name
 names(structs) <- structs
 
-hipGene <- lapply(structs, function(r){
-  sapply(polyQgenes, function(g) {
-    set <- regionLs[[r]][[g]]
-    set[set %in% "HIP1R"]
-  })
-})
-hipGene <- lapply(hipGene, function(x){x[lapply(x, length)>0]})
-
+# Presence of genes of which the product beclin 1 is described to interact by Ashkenazi et al. 2017
 bec1Gene <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
     set <- regionLs[[r]][[g]]
@@ -49,27 +40,29 @@ bec1Gene <- lapply(structs, function(r){
   })
 })
 bec1Gene <- lapply(bec1Gene, function(x){x[lapply(x, length)>0]})
+bec1Gene
 
+# Number of DNA repair genes co-expressed with a polyQ gene (MSigDB)
 dnaBGenes <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
     intersect(regionLs[[r]][[g]], dnaBindGenes)
   })
 })
-intersect(dnaBGenes$HD_region$ATN1, dnaBGenes$HD_region$ATXN2)
-intersect(dnaBGenes$frontal_lobe$ATN1, dnaBGenes$frontal_lobe$ATXN2)
-intersect(dnaBGenes$parietal_lobe$ATN1, dnaBGenes$parietal_lobe$ATXN2)
-intersect(dnaBGenes$striatum$ATN1, dnaBGenes$striatum$ATXN2)
 dnaGenesTable <- sapply(dnaBGenes, function(r){sapply(r, length)})
 colnames(dnaGenesTable) <- gsub("_", " ", colnames(dnaGenesTable))
+dnaGenesTable
 
+# Number of ubiquitination genes co-expressed with a polyQ gene (MSigDB)
 ubGenes <- lapply(structs, function(r){
   sapply(polyQgenes, function(g) {
     intersect(regionLs[[r]][[g]], ubiqGenes)
   })
 })
 ubGenesTable <- sapply(ubGenes, function(r){sapply(r, length)})
+colnames(ubGenesTable) <- gsub("_", " ", colnames(ubGenesTable))
+ubGenesTable
 
-#plot numbers
+#plot numbers of DNA and ubiquitination genes (manuscript, Figure S7)
 table.numbers <- dget("polyQ_scripts/tableNumbers.R")
 
 pdf(file = "dna_repair_ubiquitination_genes.pdf", 10, 4)
@@ -78,51 +71,20 @@ table.numbers(dnaGenesTable, name = expression(atop("Co-expressed", " DNA repair
 table.numbers(ubGenesTable, name = expression(atop("Co-expressed", " ubiquitination genes")))
 dev.off()
 
+# Ubiquitin conjugating enzymes genes family (UBE2) 
 ubGenes <- sapply(polyQgenes, function(g) {
   set <- regionLs$HD_region[[g]]
-  res1 <- c(intersect(set, ube2Fam$Approved.Symbol), intersect(set, ube2Fam$Previous.Symbols))
-  res2 <- set[grep("UB", set)]
-  c(res1, res2)
+  res1 <- c(intersect(set, ube2Fam$Approved.Symbol), intersect(set, ube2Fam$Previous.Symbols)) # Also check alternative symbols
+  res1
 })
-ubGenes <- ubGenes[lapply(ubGenes, length)>0]
+ubGenes[lapply(ubGenes, length)>0] # show non-empty lists
 
-common_interactors <- t(sapply(polyQgenes, function(g){
-  hdSet <- regionLs$HD_region[[g]]
-  sapply(structureIDs$name[-8], function(r){
-    common <- intersect(hdSet, regionLs[[r]][[g]])
-    length(common)
-  })
-}))
-
-pairs <- names(geneSetOverlap$HD_region)
-common_overlap <- t(sapply(pairs, function(p){
-  hdSet <- geneSetOverlap$HD_region[[p]]
-  sapply(structureIDs$name[-8], function(r){
-    common <- intersect(hdSet, geneSetOverlap[[r]][[p]])
-    length(common)
-  })
-}))
-
-sharedUbGenes <- sapply(pairs, function(p){
-  set <- sapply(geneSetOverlap$HD_region[[p]], entrezId2Name)
-  res1 <- c(intersect(set, ube2Fam$Approved.Symbol), intersect(set, ube2Fam$Previous.Symbols))
-  res2 <- set[grep("UB", set)]
-  c(res1, res2)
-})
-sharedUbGenes <- sharedUbGenes[lapply(sharedUbGenes, length)>0]
-Reduce(intersect, sharedUbGenes)
-unique(Reduce(c, sharedUbGenes))
-
-all <-Reduce(union, regionLs$HD_region)
-all <- sapply(all, entrezId2Name)
-all[grep("UBE2", all)]
-c(intersect(all, ube2Fam$Approved.Symbol), intersect(all, ube2Fam$Previous.Symbols))
-##############################
+# Ubiquitin genes co-expressing with ATN1, ATXN2, and HTT in the HD-associated region
 x <- Reduce(intersect, list(regionLs$HD_region$ATN1, regionLs$HD_region$ATXN2, regionLs$HD_region$HTT))
 x[grep("UB", x)]
 
 ##################
-#Print overlapping gene sets
+#Print overlapping gene sets (manuscript, Table S3)
 lapply(structs[1], function(r){
   
   signifPairs <- names(which(geneSetOverlapSignif[, r] < 0.05)) # select significant pairs

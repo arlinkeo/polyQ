@@ -2,7 +2,7 @@
 
 source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 
-library(reshape)
+# library(reshape)
 
 #Prepare data and functions
 structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
@@ -29,7 +29,7 @@ read.RdavidOutput <- function(fileName){
   }
 }
 
-# Load GO terms
+# Load GO terms for each brain region and polyQ gene
 names(pQEntrezIDs) <- pQEntrezIDs
 ll <- lapply(structures, function(r){
   lapply(pQEntrezIDs, function(pq){
@@ -75,7 +75,7 @@ table <- sapply(ll2, function(x){
 })
 colnames(table) <- gsub("_", " ", colnames(table))
 
-# Plot table with number of terms in each geneset
+# Plot table with number of terms in each geneset (manuscript, Figure S4)
 table.numbers <- dget("polyQ_scripts/tableNumbers.R")
 
 pdf(file = "number_of_goterms050.pdf", 10, 4)
@@ -83,29 +83,13 @@ par(mar = c(2,6,12,3));
 table.numbers(table, name = expression(atop("Enriched", "functional terms")))
 dev.off()
 
+##########################################################################################
+
 #Number of overlapping terms for each polyQ pair
 ll3 <- lapply(ll2, function(r){sapply(r, function(s){s$Term})})
 termSetOverlap <- lapply(ll3, setOverlap)
 save(termSetOverlap, file = "resources/termSetOverlap.RData")
 load("resources/termSetOverlap.RData")
-
-#Print shared terms between pairs
-lapply(structureIDs$name, function(r){
-  sets <- termSetOverlap[[r]]
-  pairs <- names(which(sapply(sets, length) > 10)) # select significant pairs
-  sets <- sets[pairs]
-  
-  fileConn <- file("overlapTermSets_HDregion.txt")
-  comment <- ("#PolyQ pairs with >10 shared enriched terms")
-  header <- paste("PolyQ_pair", "P-value", "Overlapping_co-expressed_genes", sep = "\t")
-  printList <- lapply(pairNames, function(p){
-    set <- paste(sets[[p]], collapse = ", ")
-    paste(p, signifPairs[[p]], set, sep = "\t")
-  })
-  writeLines(c(comment, header, unlist(printList)), fileConn)
-  close(fileConn)
-  
-})
 
 # Terms shared between HTT, ATN1, and ATXN2 in all regions
 tabList <- lapply(names(ll2), function(x){
@@ -123,6 +107,7 @@ names(tabList) <- names(ll2)
 tabList <- tabList[which(sapply(tabList, nrow) != 0)] # remove empty tables
 
 
+# Overlap of terms between HTT, ATN1, and ATXN2 and their p-values (manuscript, Table S4)
 fileConn <- file("overlapTerms_HTT_ATN1_ATXN2.txt")
 printList <- lapply(names(tabList), function(r){
   tab <- tabList[[r]]

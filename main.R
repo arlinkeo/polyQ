@@ -40,6 +40,10 @@ source("diffExpr_HDregion.R")
 source("coexpr_SCN_Coppen2016.R")
 # correlation matrix saved as "meanCor_[region].RData"
 
+# Extract direct, single correlation between polyQ genes in each region
+source("single_corr.R")
+# Saved as "resources/sc_list.RData"
+
 # Plot histograms of correlation distribution of each polyQ gene and brain region
 source("coexpr_dist.R")
 # Pdf is saved: "coexpr_dist.pdf"
@@ -54,13 +58,21 @@ source("threshold_networks.R")
 
 # Enrichment of GO terms for each set of genes that co-express with a polyQ gene in each region
 source("goterms.R")
+# results saved in folder for each brain region: regional_coexpression/[brain region]/goterms050_[brain region acronym]_[polyQ gene].txt
 
 # Overlap of co-expressed genes between two polyQ genes
-
+source("overlap_genesets.R")
+# saved as "resources/geneSetOverlap.RData" and "resources/geneSetOverlapSignif.RData"
+# Furthermore, the presence of dna repair and ubiquitination genes is  checked
 
 # Overlap of functional terms between genes co-expressed with polyQ genes
+source("overlap_goterms.R")
+# Number of terms found for each brain region and polyQ gene is saved as "number_of_goterms050.pdf"
+# Terms that overlap between polyQ gene sets are saved as "resources/termSetOverlap.RData"
+# those that overlap with HTT, ATN1, ATXN2 in the HD-associated region are saved as a table: "overlapTerms_HTT_ATN1_ATXN2.txt"
 
-
+# Plot overlap of genes and terms for each gene pair
+source("plot_overlap_table.R")
 
 # Plot circular graphs of polyQ genes in Cytoscape, interactively
 # source("cytPlot.R")

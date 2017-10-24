@@ -2,7 +2,6 @@
 source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 
 #Prepare data and functions
-structureIDs <- structureIDs[!structureIDs$name %in% c("brain"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 
 setOverlap <- dget("polyQ_scripts/setOverlap.R")

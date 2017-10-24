@@ -8,7 +8,6 @@ source("PolyQ_scripts/baseScript.R")
 load("resources/avgExpr.RData")
 load("resources/avgExprColor.RData")
 
-structureIDs <- structureIDs[!structureIDs$name %in% c("brain", "cerebellum"), ]
 structureIDs <- rbind(c(NA, "HDregion", "HD_region"), structureIDs)
 rownames(structureIDs) <- structureIDs$name
 

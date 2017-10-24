@@ -4,7 +4,6 @@ setwd("C:/Users/dkeo/surfdrive/polyQ_coexpression")
 
 #Prepare data and functions
 source("PolyQ_scripts/baseScript.R")
-structureIDs <- structureIDs[!structureIDs$name %in% c("brain"), ]
 structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
 
 #Load mean corr. data across 6 brains. and select based on threshold

@@ -16,17 +16,20 @@ colorsStruct <- sapply(ontology$color_hex_triplet[match(structures, ontology$nam
 colorsStruct <- c(colorsStruct[-1], colorOther, colorsStruct[1])
 colorsHD <- c("#956b53", colorOther)
 
+# Total number of samples (whole brain, all donors)
+sumTotal <- sum(sapply(sampleIDs[[1]],length))
+
 # Pie chart info of samples in HD-associated region
 sumDonors <- apply(nSamples, 2, sum) # sum across donors
-nonHD <- sumDonors["brain"]-sumDonors["HD_region"]
+nonHD <- sumTotal-sumDonors["HD_region"]
 vecHD <- c(sumDonors["HD_region"], nonHD)
 names(vecHD) <- c("HD-associated region", "rest")
 names(vecHD) <- paste0(names(vecHD), " (", vecHD, ")")
 sum(vecHD)
 
 # Pie chart info of samples in anatomical regions
-sumStruct <- sumDonors[-which(names(sumDonors) %in% c("brain", "HD_region"))]
-nonStruct <- sumDonors["brain"] - sum(sumStruct)
+sumStruct <- sumDonors[-which(names(sumDonors) %in% c("HD_region"))]
+nonStruct <- sumTotal - sum(sumStruct)
 vecStruct <- c(sumStruct, nonStruct)
 names(vecStruct) <- c(structures[-1], "rest")
 names(vecStruct) <- paste0(names(vecStruct), " (", vecStruct, ")")

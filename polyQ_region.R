@@ -3,7 +3,7 @@ options(stringsAsFactors = FALSE)
 
 # Sample structures
 ontology <- read.csv("../ABA_human_processed/Ontology_edited.csv")
-structures <- c("brain",  "frontal lobe", "mesencephalon", "striatum", "hypothalamus", "pons", "parietal lobe", "cerebellar cortex")
+structures <- c("frontal lobe", "mesencephalon", "striatum", "hypothalamus", "pons", "parietal lobe", "cerebellar cortex")
 structureIDs <- ontology[ontology$name %in% structures, ][ , c(1:3)]
 structureIDs[, 3] <- sapply(structureIDs[, 3], function(id){gsub(" ", "_", id)})
 rownames(structureIDs) <- structureIDs$name

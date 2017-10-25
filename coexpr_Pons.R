@@ -5,7 +5,7 @@ source("C:/Users/dkeo/surfdrive/polyQ_coexpression/PolyQ_scripts/baseScript.R")
 load("resources/BrainExpr.RData")
 load("resources/sampleIDs.RData")
 corMatrix <- dget("PolyQ_scripts/corMatrix.R")
-structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
+structureIDs <- rbind(HD_region = c(NA, "HDregion", "HD_region"), structureIDs)
 
 #Specify brain region
 id <- structureIDs["pons", ]

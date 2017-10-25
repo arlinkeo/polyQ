@@ -3,11 +3,11 @@
 library("rgexf")
 
 # load("polyQ.RData")
-# load("regional_coexpression/HD_region/meanCor_HDnetworkBD.RData")
+# load("regional_coexpression/HD_region/meanCor_HDregion.RData")
 # load("genesets_threshold050.RData")
 # probeInfo <- read.csv("/tudelft.net/staff-bulk/ewi/insy/DBL/sjoerdhuisman/ABA_human_brain_probegene/probe_info_2014-11-11.csv")
 source("PolyQ_scripts/baseScript.R")
-# load("regional_coexpression/HD_region/meanCor_HDnetworkBD.RData")
+# load("regional_coexpression/HD_region/meanCor_HDregion.RData")
 load("resources/genesets_threshold050.RData")
 probeInfo[grep("TMEM189-UBE2V1", probeInfo$gene_name), 4] <- "TMEM189-UBE2V1" # change its gene symbol TMEM189 to TMEM189-UBE2V1, otherwise there are non-unique gene symbols
 

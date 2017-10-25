@@ -4,7 +4,7 @@ options(stringsAsFactors = FALSE)
 
 #Prepare data and functions
 source("PolyQ_scripts/baseScript.R")
-structureIDs <- rbind(HD_region = c(NA, "HDnetworkBD", "HD_region"), structureIDs)
+structureIDs <- rbind(HD_region = c(NA, "HDregion", "HD_region"), structureIDs)
 structures <- split(structureIDs, seq(nrow(structureIDs)))
 names(structures) <- structureIDs$name
 

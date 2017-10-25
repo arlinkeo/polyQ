@@ -15,7 +15,6 @@ pqOrder <- c(3, c(1:2), c(4:9))
 polyQgenes <- polyQgenes[pqOrder]
 pQEntrezIDs <- pQEntrezIDs[pqOrder]
 pQcolors <- pQcolors[pqOrder]
-#pQgeneInfo
 avgExpr <- avgExpr[pqOrder, ]
 avgExprColor <- avgExprColor[pqOrder, ]
 

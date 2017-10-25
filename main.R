@@ -36,9 +36,16 @@ source("PolyQ_scripts/diffExpr_HDregion.R")
 # Differentially expressed genes are saved as "resources/diffgenesPerBrain.RData"
 # A pdf is saved with  boxplots of the expression of each polyQ genes in- and outside the HD-region.
 
-# Co-expression network of HD-associated region
-# This script was ran on a server, because of memory requirements
-source("PolyQ_scripts/coexpr_SCN_Coppen2016.R")
+# Co-expression network of HD-associated region and anatomical brain regions
+# Thi sscript was ran on a server, because of memory requirements
+source("PolyQ_scripts/coexpr_HDregion.R")
+source("PolyQ_scripts/coexpr_FL.R")
+source("PolyQ_scripts/coexpr_PL.R")
+source("PolyQ_scripts/coexpr_Str.R")
+source("PolyQ_scripts/coexpr_Hy.R")
+source("PolyQ_scripts/coexpr_MES.R")
+source("PolyQ_scripts/coexpr_CbCx.R")
+
 # correlation matrix saved as "meanCor_[region].RData"
 
 # Extract direct, single correlation between polyQ genes in each region
